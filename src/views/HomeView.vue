@@ -1,6 +1,39 @@
-<script setup></script>
+<script setup>
+import UiButton from "@/components/ui/UiButton.vue";
+import UiInput from "@/components/ui/UiInput.vue";
+import UiDialog from "@/components/ui/UiDialog.vue";
+import { ref } from "vue";
+
+const createDialogOpen = ref(false);
+
+function openCreateDialog() {
+  createDialogOpen.value = true;
+}
+
+function closeCreateDialog() {
+  createDialogOpen.value = false;
+}
+</script>
 
 <template>
+  <template v-if="createDialogOpen">
+    <UiDialog @close="closeCreateDialog">
+      <template #head>
+        <UiButton @click="closeCreateDialog">
+          Скасувати
+        </UiButton>
+        <div class="ui-dialog-head-title">
+          Новий проєкт
+        </div>
+        <UiButton class="accent">
+          Створити
+        </UiButton>
+      </template>
+
+      <UiInput />
+    </UiDialog>
+  </template>
+
   <div class="ui-home-page">
     <div class="ui-home-page-logo">
       <img src="@/assets/images/logo.svg" alt="Logo">
@@ -11,7 +44,7 @@
         Останні
       </h3>
       <ul class="ui-home-page-projects">
-        <li class="ui-home-page-project new">
+        <li @click="openCreateDialog" class="ui-home-page-project new">
           <div class="ui-home-page-project-name">
             <span class="material-icons">add</span>
             Створити новий проєкт
