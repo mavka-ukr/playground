@@ -1,1 +1,30 @@
-//
+html {
+  --bg-color: #f5f5f5;
+  --text-color: #000000;
+  --hint-color: #444444;
+  --border-color: #EEEEEE;
+  --card-color: #ffffff;
+  --card-hover-color: #f8f8f8;
+  --card-active-color: #f6f6f6;
+
+  @media (prefers-color-scheme: dark) {
+    --bg-color: #111111;
+    --text-color: #ffffff;
+    --hint-color: #999999;
+    --border-color: #EEEEEE;
+  }
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+
+  font-family: 'Rubik', sans-serif;
+
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
