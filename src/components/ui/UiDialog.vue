@@ -50,7 +50,7 @@ defineEmits(["close"]);
 .ui-dialog-head {
   position: relative;
 
-  padding: 0.5rem;
+  padding: 0.75rem;
 
   display: flex;
   align-items: center;
@@ -68,6 +68,7 @@ defineEmits(["close"]);
 }
 
 .ui-dialog-body {
-  padding: 0.5rem;
+  padding: 0.75rem;
+  padding-top: 0;
 }
 </style>

@@ -15,10 +15,21 @@
   background: var(--card-color);
   color: var(--text-color);
   cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+  transition: all 125ms ease-in-out;
+
+  &:active {
+    box-shadow: none;
+  }
 
   &.accent {
     background: #375BB6;
     color: white;
+
+    &:active {
+      box-shadow: none;
+      background: darken(#375BB6, 5);
+    }
   }
 
   &.dark {

@@ -1,8 +1,9 @@
 <script setup>
-import UiButton from "@/components/ui/UiButton.vue";
-import UiInput from "@/components/ui/UiInput.vue";
-import UiDialog from "@/components/ui/UiDialog.vue";
 import { ref } from "vue";
+import NewProjectDialog from "@/components/dialogs/NewProjectDialog.vue";
+import { useProjects } from "@/store/projects.js";
+
+const { projects } = useProjects();
 
 const createDialogOpen = ref(false);
 
@@ -17,21 +18,7 @@ function closeCreateDialog() {
 
 <template>
   <template v-if="createDialogOpen">
-    <UiDialog @close="closeCreateDialog">
-      <template #head>
-        <UiButton @click="closeCreateDialog">
-          Скасувати
-        </UiButton>
-        <div class="ui-dialog-head-title">
-          Новий проєкт
-        </div>
-        <UiButton class="accent">
-          Створити
-        </UiButton>
-      </template>
-
-      <UiInput />
-    </UiDialog>
+    <NewProjectDialog @close="closeCreateDialog" />
   </template>
 
   <div class="ui-home-page">
@@ -50,14 +37,16 @@ function closeCreateDialog() {
             Створити новий проєкт
           </div>
         </li>
-        <li class="ui-home-page-project">
-          <div class="ui-home-page-project-name">
-            Лісова пісня
-          </div>
-          <div class="ui-home-page-project-info">
-            сьогодні о 12:32
-          </div>
-        </li>
+        <template v-for="project in projects" :key="project.id">
+          <li class="ui-home-page-project">
+            <div class="ui-home-page-project-name">
+              {{ project.name }}
+            </div>
+            <div class="ui-home-page-project-info">
+              {{ new Date(project.date).toLocaleString() }}
+            </div>
+          </li>
+        </template>
       </ul>
       <h3 class="ui-home-page-projects-title">
         Приклади
@@ -65,10 +54,15 @@ function closeCreateDialog() {
       <ul class="ui-home-page-projects">
         <li class="ui-home-page-project">
           <div class="ui-home-page-project-name">
-            Простий проєкт
+            Привіт від Лесі
           </div>
           <div class="ui-home-page-project-info">
-            консольна програма
+            <div class="ui-home-page-project-badge">
+              консольна програма
+            </div>
+            <div class="ui-home-page-project-badge">
+              скоро
+            </div>
           </div>
         </li>
         <li class="ui-home-page-project">
@@ -76,7 +70,12 @@ function closeCreateDialog() {
             Сторінка
           </div>
           <div class="ui-home-page-project-info">
-            вебсайт
+            <div class="ui-home-page-project-badge">
+              вебсайт
+            </div>
+            <div class="ui-home-page-project-badge">
+              скоро
+            </div>
           </div>
         </li>
         <li class="ui-home-page-project">
@@ -84,12 +83,46 @@ function closeCreateDialog() {
             Телеграм-бот
           </div>
           <div class="ui-home-page-project-info">
-            ну привіт...
+            <div class="ui-home-page-project-badge">
+              консольна програма
+            </div>
+            <div class="ui-home-page-project-badge">
+              скоро
+            </div>
+          </div>
+        </li>
+        <li class="ui-home-page-project">
+          <div class="ui-home-page-project-name">
+            Розпізнавання чисел
+          </div>
+          <div class="ui-home-page-project-info">
+            <div class="ui-home-page-project-badge">
+              нейромережа
+            </div>
+            <div class="ui-home-page-project-badge">
+              скоро
+            </div>
+          </div>
+        </li>
+        <li class="ui-home-page-project">
+          <div class="ui-home-page-project-name">
+            ChatGPT
+          </div>
+          <div class="ui-home-page-project-info">
+            <div class="ui-home-page-project-badge">
+              нейромережа
+            </div>
+            <div class="ui-home-page-project-badge">
+              скоро
+            </div>
           </div>
         </li>
       </ul>
     </div>
   </div>
+  <footer class="footer">
+    <a href="https://мавка.укр" target="_blank">мавка.укр</a>
+  </footer>
 </template>
 
 <style lang="scss">
@@ -98,10 +131,10 @@ function closeCreateDialog() {
 }
 
 .ui-home-page {
-  max-width: 840px;
+  max-width: 720px;
   width: 100%;
   margin: 0 auto;
-  padding: 2.5rem 2.5rem;
+  padding: 2.5rem 1rem;
 }
 
 .ui-home-page-logo {
@@ -148,10 +181,11 @@ function closeCreateDialog() {
 
   .ui-home-page-project {
     border: 1px solid var(--border-color);
+    border-top: none;
   }
 
   .ui-home-page-project:first-child, {
-    border-bottom: none;
+    border-top: 1px solid var(--border-color);
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
   }
@@ -160,10 +194,6 @@ function closeCreateDialog() {
     border-top: none;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
-  }
-
-  .ui-home-page-project:first-child + .ui-home-page-project:last-child {
-    border-top: 1px solid var(--border-color);
   }
 
   .ui-home-page-project-name {
@@ -179,9 +209,44 @@ function closeCreateDialog() {
   }
 
   .ui-home-page-project-info {
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
     font-size: 0.9rem;
     color: var(--hint-color);
+    display: flex;
+    align-items: center;
+  }
+
+  .ui-home-page-project-badge {
+    font-size: 0.8rem;
+    height: 1.25rem;
+    padding: 0 0.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    text-align: center;
+    background: var(--border-color);
+    width: fit-content;
+    border-radius: 1rem;
+  }
+
+  .ui-home-page-project-badge + .ui-home-page-project-badge {
+    margin-left: 0.25rem;
+  }
+}
+
+.footer {
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+
+  a {
+    color: var(--hint-color);
+    text-decoration: none;
   }
 }
 </style>

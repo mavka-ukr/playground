@@ -1,15 +1,41 @@
+<script setup>
+import { computed } from "vue";
+
+const emit = defineEmits(["update:modelValue"]);
+
+const props = defineProps({
+  modelValue: String
+});
+
+const value = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit("update:modelValue", value);
+  }
+});
+</script>
+
 <template>
-  <input class="ui-input" type="text" placeholder="Назва">
+  <input v-model="value" class="ui-input" type="text">
 </template>
 
 <style lang="scss">
 .ui-input {
   padding: 0.75rem;
-  border: 1px solid var(--border-color);
+  border: none;
   border-radius: 0.5rem;
   font-family: Rubik, sans-serif;
   font-size: 0.9rem;
   width: 100%;
   background: var(--card-color);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+
+  color: var(--text-color);
+
+  &::placeholder {
+    color: var(--hint-color);
+  }
 }
 </style>
