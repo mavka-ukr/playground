@@ -1,7 +1,11 @@
 <script setup>
 import { ref } from "vue";
 import NewProjectDialog from "@/components/dialogs/NewProjectDialog.vue";
-import { useProjects } from "@/store/projects.js";
+import { currentProjectId, useProjects } from "@/store/projects.js";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const { projects } = useProjects();
 
@@ -13,6 +17,10 @@ function openCreateDialog() {
 
 function closeCreateDialog() {
   createDialogOpen.value = false;
+}
+
+function openProject(project) {
+  currentProjectId.value = project.id;
 }
 </script>
 
@@ -38,12 +46,12 @@ function closeCreateDialog() {
           </div>
         </li>
         <template v-for="project in projects" :key="project.id">
-          <li class="ui-home-page-project">
+          <li @click="openProject(project)" class="ui-home-page-project">
             <div class="ui-home-page-project-name">
               {{ project.name }}
             </div>
             <div class="ui-home-page-project-info">
-              {{ new Date(project.date).toLocaleString() }}
+              {{ dayjs(project.date).fromNow() }}
             </div>
           </li>
         </template>
@@ -111,6 +119,19 @@ function closeCreateDialog() {
           <div class="ui-home-page-project-info">
             <div class="ui-home-page-project-badge">
               нейромережа
+            </div>
+            <div class="ui-home-page-project-badge">
+              скоро
+            </div>
+          </div>
+        </li>
+        <li class="ui-home-page-project">
+          <div class="ui-home-page-project-name">
+            Перелесник
+          </div>
+          <div class="ui-home-page-project-info">
+            <div class="ui-home-page-project-badge">
+              малюнок вогнем
             </div>
             <div class="ui-home-page-project-badge">
               скоро
@@ -210,7 +231,7 @@ function closeCreateDialog() {
 
   .ui-home-page-project-info {
     margin-top: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--hint-color);
     display: flex;
     align-items: center;

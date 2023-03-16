@@ -31,6 +31,7 @@ const value = computed({
   width: 100%;
   background: var(--card-color);
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+  outline: none;
 
   color: var(--text-color);
 
