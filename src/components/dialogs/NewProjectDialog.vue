@@ -3,7 +3,7 @@ import UiDialog from "@/components/ui/UiDialog.vue";
 import UiInput from "@/components/ui/UiInput.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import { ref } from "vue";
-import { useProjects } from "@/store/projects.js";
+import { currentProjectId, useProjects } from "@/store/projects.js";
 
 const emit = defineEmits(["close"]);
 
@@ -21,8 +21,8 @@ function create() {
     return;
   }
 
-  createProject(newProjectName.value);
-  close();
+  const newProject = createProject(newProjectName.value);
+  currentProjectId.value = newProject.id;
 }
 </script>
 

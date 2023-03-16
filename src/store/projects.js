@@ -1,4 +1,4 @@
-import { computed, ref, unref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 export const currentProjectId = ref(null);
 
@@ -9,21 +9,31 @@ watch(projects, () => {
 });
 
 function createProject(name) {
+  const newProject = {
+    id: (projects.value.sort((a, b) => b.id - a.id)?.[0]?.id || 0) + 1,
+    name,
+    date: new Date().toISOString(),
+    creationDate: new Date().toISOString(),
+    files: [
+      {
+        name: "старт.м",
+        content: `
+дія привітати()
+  друк("Привіт від Лесі!")
+кінець
+
+привітати()
+`.trim()
+      }
+    ]
+  };
+
   projects.value = [
     ...projects.value,
-    {
-      id: (projects.value.sort((a, b) => b.id - a.id)?.[0]?.id || 0) + 1,
-      name,
-      date: new Date().toISOString(),
-      creationDate: new Date().toISOString(),
-      files: [
-        {
-          name: "старт.м",
-          content: ""
-        }
-      ]
-    }
+    newProject
   ];
+
+  return newProject;
 }
 
 function updateProject(project) {
@@ -34,17 +44,7 @@ function updateProject(project) {
 }
 
 export function useProjects() {
-  const sortedProjects = computed(() => projects.value.sort((a, b) => new Date(b.date) - new Date(a.date)));
+  const sortedProjects = computed(() => projects.value.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate)));
 
   return { projects: sortedProjects, createProject, updateProject };
-}
-
-export function useProject(id) {
-  const project = computed(() => {
-    id = unref(id);
-
-    return projects.value.find((p) => p.id === id);
-  });
-
-  return { project };
 }

@@ -10,9 +10,11 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "codemirror": "^6.0.1",
     "dayjs": "^1.11.7",
-    "mavka-web": "0.0.2",
+    "mavka": "0.9.25",
     "vue": "^3.2.47",
+    "vue-codemirror": "^6.1.1",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
