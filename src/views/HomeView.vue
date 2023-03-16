@@ -205,16 +205,20 @@ function openProject(project) {
     border-top: none;
   }
 
-  .ui-home-page-project:first-child, {
+  .ui-home-page-project:first-child {
     border-top: 1px solid var(--border-color);
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
   }
 
-  .ui-home-page-project:last-child, {
+  .ui-home-page-project:last-child {
     border-top: none;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
+  }
+
+  .ui-home-page-project:only-child {
+    border-top: 1px solid var(--border-color);
   }
 
   .ui-home-page-project-name {
