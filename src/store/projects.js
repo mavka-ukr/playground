@@ -6,6 +6,8 @@ const projects = ref(JSON.parse(localStorage.getItem("mavka_projects") || "[]"))
 
 watch(projects, () => {
   localStorage.setItem("mavka_projects", JSON.stringify(projects.value));
+}, {
+  deep: true
 });
 
 function createProject(name) {
