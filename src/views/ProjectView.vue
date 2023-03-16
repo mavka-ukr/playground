@@ -5,6 +5,11 @@ import { Codemirror } from "vue-codemirror";
 import { basicSetup } from "codemirror";
 import Mavka from "mavka";
 
+import { StreamLanguage } from "@codemirror/language";
+import { mavkaLang } from "@/views/mavkalang.js";
+
+const language = StreamLanguage.define(mavkaLang);
+
 const props = defineProps({
   project: Object
 });
@@ -116,7 +121,7 @@ onMounted(() => {
         :autofocus="true"
         :indent-with-tab="true"
         :tab-size="2"
-        :extensions="[basicSetup]"
+        :extensions="[basicSetup, language]"
       />
       <div class="ui-project-console">
         <template v-for="(line, i) in history" :key="i">
