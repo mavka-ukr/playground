@@ -7,7 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
-const { projects } = useProjects();
+const { projects, deleteProject } = useProjects();
 
 const createDialogOpen = ref(false);
 
@@ -21,6 +21,12 @@ function closeCreateDialog() {
 
 function openProject(project) {
   currentProjectId.value = project.id;
+}
+
+function removeProject(project) {
+  if (window.confirm("Дійсно видалити цей проєкт?")) {
+    deleteProject(project);
+  }
 }
 </script>
 
@@ -52,6 +58,9 @@ function openProject(project) {
             </div>
             <div class="ui-home-page-project-info">
               {{ dayjs(project.date).fromNow() }}
+            </div>
+            <div @click.stop.prevent="removeProject(project)" class="ui-home-page-project-delete-button">
+              <span class="material-icons">delete</span>
             </div>
           </li>
         </template>
@@ -182,6 +191,7 @@ function openProject(project) {
   padding: 0;
 
   .ui-home-page-project {
+    position: relative;
     list-style: none;
     margin: 0;
     padding: 1rem;
@@ -191,8 +201,36 @@ function openProject(project) {
 
     transition: all 125ms ease-in-out;
 
+    .ui-home-page-project-delete-button {
+      position: absolute;
+      right: 1rem;
+      top: calc(50% - 0.75rem);
+      height: 1.5rem;
+      width: 1.5rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--hint-color);
+      border-radius: 50%;
+      user-select: none;
+
+      .material-icons {
+        font-size: 1rem;
+      }
+
+      &:hover {
+        background: rgba(red, 0.25);
+        color: red;
+      }
+    }
+
     &:hover {
       background-color: var(--card-hover-color);
+
+      .ui-home-page-project-delete-button {
+        display: flex;
+      }
     }
 
     &:active {

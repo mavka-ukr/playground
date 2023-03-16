@@ -45,8 +45,12 @@ function updateProject(project) {
   ];
 }
 
+function deleteProject(project) {
+  projects.value = projects.value.filter((p) => p.id !== project.id);
+}
+
 export function useProjects() {
   const sortedProjects = computed(() => projects.value.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate)));
 
-  return { projects: sortedProjects, createProject, updateProject };
+  return { projects: sortedProjects, createProject, updateProject, deleteProject };
 }
