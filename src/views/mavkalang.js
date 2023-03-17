@@ -1,5 +1,5 @@
 function prefixRE(words) {
-  return new RegExp("^(?:" + words.join("|") + ")", "i");
+  return new RegExp("^(?:" + words.join("|") + ")", "ui");
 }
 
 function wordRE(words) {
@@ -8,7 +8,7 @@ function wordRE(words) {
 
 // long list of standard functions from lua manual
 var builtins = wordRE(["число", "текст", "логічне", "пусто", "так", "ні"]);
-var keywords = wordRE(["дія", "якщо", "ні", "кінець", "структура", "більше", "менше"]);
+var keywords = wordRE(["дія", "якщо", "не", "кінець", "структура", "більше", "менше", "є"]);
 
 var indentTokens = wordRE(["дія", "якщо", "перебрати", "поки", "структура", "\\("]);
 var dedentTokens = wordRE(["кінець", "\\)"]);
@@ -23,13 +23,13 @@ function readBracket(stream) {
 
 function normal(stream, state) {
   var ch = stream.next();
-  if (ch == "-" && stream.eat("-")) {
-    if (stream.eat("[") && stream.eat("["))
+  if (ch == ";" && stream.eat(";")) {
+    if (stream.eat(";--") && stream.eat(";--"))
       return (state.cur = bracketed(readBracket(stream), "comment"))(stream, state);
     stream.skipToEnd();
     return "comment";
   }
-  if (ch == "\"" || ch == "'") return (state.cur = string(ch))(stream, state);
+  if (ch == "\"") return (state.cur = string(ch))(stream, state);
   if (ch == "[" && /[\[=]/.test(stream.peek()))
     return (state.cur = bracketed(readBracket(stream), "string"))(stream, state);
   if (/\d/.test(ch)) {
@@ -49,9 +49,9 @@ function bracketed(level, style) {
       ch;
     while ((ch = stream.next()) != null) {
       if (curlev == null) {
-        if (ch === "]") curlev = 0;
+        if (ch === "--;") curlev = 0;
       } else if (ch === "=") ++curlev;
-      else if (ch === "]" && curlev === level) {
+      else if (ch === "--;" && curlev === level) {
         state.cur = normal;
         break;
       } else curlev = null;
@@ -102,6 +102,6 @@ export const mavkaLang = {
 
   languageData: {
     indentOnInput: /^\s*(?:end|until|else|\)|\})$/,
-    commentTokens: { line: "--", block: { open: "--[[", close: "]]--" } }
+    commentTokens: { line: ";;", block: { open: ";--", close: "--;" } }
   }
 };

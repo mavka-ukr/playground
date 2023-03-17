@@ -30,9 +30,11 @@ const code = computed({
 
 const history = ref([]);
 
-function log(value) {
-  history.value = [...history.value, value];
+function log(...value) {
+  history.value = [...history.value, value.join(' ')];
 }
+
+let extId = 0;
 
 function buildGlobalContext(mavka) {
   return new mavka.Context(mavka, null, {
@@ -145,6 +147,10 @@ onMounted(() => {
   align-items: center;
 
   background: var(--card-color);
+}
+
+.cm-line {
+  font-family: "Fira Code", monospace;
 }
 
 .ui-project-page-tabs {
