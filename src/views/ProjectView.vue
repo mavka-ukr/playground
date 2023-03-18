@@ -7,6 +7,7 @@ import Mavka from "mavka";
 
 import { StreamLanguage } from "@codemirror/language";
 import { mavkaLang } from "@/views/mavkalang.js";
+import NewFileDialog from "@/components/dialogs/NewFileDialog.vue";
 
 const language = StreamLanguage.define(mavkaLang);
 
@@ -16,6 +17,8 @@ const props = defineProps({
 const { project } = toRefs(props);
 
 const currentFile = ref(null);
+
+const newFileDialogOpen = ref(false);
 
 const { updateProject } = useProjects();
 
@@ -31,7 +34,7 @@ const code = computed({
 const history = ref([]);
 
 function log(...value) {
-  history.value = [...history.value, value.join(' ')];
+  history.value = [...history.value, value.join(" ")];
 }
 
 let extId = 0;
@@ -85,6 +88,36 @@ function close() {
   currentProjectId.value = null;
 }
 
+function openNewFileDialog() {
+  newFileDialogOpen.value = true;
+}
+
+function closeNewFileDialog() {
+  newFileDialogOpen.value = false;
+}
+
+function createNewFile(file) {
+  project.value.files = [
+    ...project.value.files,
+    {
+      name: file.name + ".м",
+      content: ""
+    }
+  ];
+
+  closeNewFileDialog();
+}
+
+function deleteFile(file) {
+  if (window.confirm("Дійсно видалити цей модуль?")) {
+    project.value.files = project.value.files.filter((f) => f.name !== file.name);
+  }
+
+  if (file.name === currentFile.value.name) {
+    currentFile.value = project.value.files[0];
+  }
+}
+
 onMounted(() => {
   updateProject({
     ...project.value,
@@ -98,38 +131,52 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="ui-project-page" v-if="currentFile">
-    <div class="ui-project-page-header">
-      <div @click="close" class="ui-project-page-header-back">
-        <span class="material-icons">arrow_back</span>
+  <template v-if="newFileDialogOpen">
+    <NewFileDialog @close="closeNewFileDialog" @save="createNewFile" />
+  </template>
+  <div class="ui-project-page-wrapper" v-if="currentFile">
+    <div class="ui-project-page">
+      <div class="ui-project-page-header">
+        <div @click="close" class="ui-project-page-header-back">
+          <span class="material-icons">arrow_back</span>
+        </div>
+        <div class="ui-project-page-header-title">
+          {{ project.name }}
+        </div>
+        <div @click="run" class="ui-project-page-header-button play">
+          <span class="material-icons">play_arrow</span>
+          Запустити
+        </div>
       </div>
-      <div class="ui-project-page-header-title">
-        {{ project.name }}
-      </div>
-      <div @click="run" class="ui-project-page-header-button play">
-        <span class="material-icons">play_arrow</span>
-      </div>
-    </div>
-    <div class="ui-project-page-tabs">
-      <div class="ui-project-page-tab active">старт.м</div>
-      <div class="ui-project-page-tab new">
-        <span class="material-icons">add</span>
-      </div>
-    </div>
-    <div class="ui-project-code">
-      <codemirror
-        v-model="code"
-        :style="{ height: 'calc(100vh - 50px - 50px)' }"
-        :autofocus="true"
-        :indent-with-tab="true"
-        :tab-size="2"
-        :extensions="[basicSetup, language]"
-      />
-      <div class="ui-project-console">
-        <template v-for="(line, i) in history" :key="i">
-          <div class="ui-project-console-item">{{ line }}</div>
+      <div class="ui-project-page-tabs">
+        <template v-for="file in project.files" :key="file.name">
+          <div @click="currentFile = file" class="ui-project-page-tab"
+               :class="{ active: file.name === currentFile.name }">
+            {{ file.name }}
+            <div @click.stop.prevent="deleteFile(file)" class="ui-project-page-tab-delete">
+              <span class="material-icons">delete</span>
+            </div>
+          </div>
         </template>
+        <div @click="openNewFileDialog" class="ui-project-page-tab new">
+          <span class="material-icons">add</span>
+        </div>
       </div>
+      <div class="ui-project-code">
+        <codemirror
+          v-model="code"
+          :style="{ height: 'calc(100vh - 50px - 50px)' }"
+          :autofocus="true"
+          :indent-with-tab="true"
+          :tab-size="2"
+          :extensions="[basicSetup, language]"
+        />
+      </div>
+    </div>
+    <div class="ui-project-console">
+      <template v-for="(line, i) in history" :key="i">
+        <div class="ui-project-console-item">{{ line }}</div>
+      </template>
     </div>
   </div>
 </template>
@@ -168,6 +215,8 @@ onMounted(() => {
 }
 
 .ui-project-page-tab {
+  position: relative;
+
   padding: 0.5rem 1rem;
 
   display: flex;
@@ -183,9 +232,46 @@ onMounted(() => {
     font-size: 1rem;
   }
 
+  .ui-project-page-tab-delete {
+    position: absolute;
+    right: 0.5rem;
+
+    display: none;
+
+    width: 1.5rem;
+    height: 1.5rem;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    .material-icons {
+      color: inherit;
+      font-size: 0.8rem;
+    }
+
+    &:hover {
+      background: rgba(red, 0.25);
+      color: red;
+    }
+  }
+
   &:hover {
     background: var(--bg-color);
     color: var(--text-color);
+
+    &:not(.new) {
+      padding-right: 2rem;
+    }
+
+    .ui-project-page-tab-delete {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   &.active {
@@ -220,9 +306,9 @@ onMounted(() => {
 }
 
 .ui-project-page-header-button {
-  margin-left: 0.5rem;
+  margin-left: auto;
 
-  width: 50px;
+  padding: 0 1rem;
   height: 50px;
 
   display: flex;
@@ -232,6 +318,10 @@ onMounted(() => {
   font-size: 1rem;
 
   cursor: pointer;
+
+  .material-icons {
+    margin-right: 0.25rem;
+  }
 
   &.play {
     color: green;
@@ -252,7 +342,7 @@ onMounted(() => {
   font-size: 1.2rem;
 }
 
-.ui-project-code {
+.ui-project-page-wrapper {
   display: grid;
   grid-template-columns: 3fr 1fr;
 }

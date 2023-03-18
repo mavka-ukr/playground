@@ -3,25 +3,21 @@ import UiDialog from "@/components/ui/UiDialog.vue";
 import UiInput from "@/components/ui/UiInput.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import { ref } from "vue";
-import { currentProjectId, useProjects } from "@/store/projects.js";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "save"]);
 
-const { createProject } = useProjects();
-
-const newProjectName = ref("");
+const newFileName = ref("");
 
 function close() {
   emit("close");
 }
 
 function create() {
-  if (!newProjectName.value.trim()) {
+  if (!newFileName.value.trim()) {
     return;
   }
 
-  const newProject = createProject(newProjectName.value);
-  currentProjectId.value = newProject.id;
+  emit("save", { name: newFileName.value });
 }
 </script>
 
@@ -32,13 +28,13 @@ function create() {
         Скасувати
       </UiButton>
       <div class="ui-dialog-head-title">
-        Новий проєкт
+        Новий модуль
       </div>
       <UiButton @click="create" class="accent">
         Створити
       </UiButton>
     </template>
 
-    <UiInput v-model="newProjectName" placeholder="Назва" />
+    <UiInput v-model="newFileName" placeholder="Назва" />
   </UiDialog>
 </template>
