@@ -6,9 +6,8 @@ function wordRE(words) {
   return new RegExp("^(?:" + words.join("|") + ")$", "ui");
 }
 
-// long list of standard functions from lua manual
 var builtins = wordRE(["число", "текст", "логічне", "пусто", "так", "ні"]);
-var keywords = wordRE(["дія", "якщо", "не", "кінець", "структура", "більше", "менше", "є"]);
+var keywords = wordRE(["дія", "якщо", "не", "кінець", "структура", "більше", "менше", "є", "дати", "взяти", "перебрати"]);
 
 var indentTokens = wordRE(["дія", "якщо", "перебрати", "поки", "структура", "\\("]);
 var dedentTokens = wordRE(["кінець", "\\)"]);

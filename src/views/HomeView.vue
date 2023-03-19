@@ -4,6 +4,7 @@ import NewProjectDialog from "@/components/dialogs/NewProjectDialog.vue";
 import { currentProjectId, useProjects } from "@/store/projects.js";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Mavka from "mavka";
 
 dayjs.extend(relativeTime);
 
@@ -152,6 +153,7 @@ function removeProject(project) {
   </div>
   <footer class="footer">
     <a href="https://мавка.укр" target="_blank">мавка.укр</a>
+    <span class="footer-version">({{ Mavka.VERSION }})</span>
   </footer>
 </template>
 
@@ -310,6 +312,12 @@ function removeProject(project) {
   a {
     color: var(--hint-color);
     text-decoration: none;
+  }
+
+  .footer-version {
+    font-size: 0.8rem;
+    color: var(--hint-color);
+    margin-left: 0.5rem;
   }
 }
 </style>

@@ -37,34 +37,36 @@ function log(...value) {
   history.value = [...history.value, value.join(" ")];
 }
 
-let extId = 0;
-
-function buildGlobalContext(mavka) {
-  return new mavka.Context(mavka, null, {
-    "друк": new mavka.JsFunctionCell(mavka, (args) => log(
-      ...args
-        .map((arg) => mavka.toCell(arg).asString().asJsString())
-    )),
-    "global": mavka.toCell(window)
-  });
-}
-
-function buildLoader(mavka) {
-  return null;
-}
-
-function buildExternal(mavka) {
-  return {};
-}
-
-const mavka = new Mavka({
-  buildGlobalContext,
-  buildLoader,
-  buildExternal
-});
-
 async function run() {
   history.value = [];
+
+  function buildGlobalContext(mavka) {
+    return new mavka.Context(mavka, null, {
+      "друк": new mavka.JsFunctionCell(mavka, (args) => log(
+        ...args
+          .map((arg) => mavka.toCell(arg).asString().asJsString())
+      )),
+      "global": mavka.toCell(window)
+    });
+  }
+
+  function buildLoader(mavka) {
+    const files = {};
+    for (const pFile of project.value.files) {
+      files[pFile.name.substring(0, pFile.name.length - 2)] = pFile.content;
+    }
+    return new mavka.MemoryLoader(mavka, files);
+  }
+
+  function buildExternal(mavka) {
+    return {};
+  }
+
+  const mavka = new Mavka({
+    buildGlobalContext,
+    buildLoader,
+    buildExternal
+  });
 
   try {
     const mainContext = new mavka.Context(mavka, mavka.context);
@@ -77,11 +79,15 @@ async function run() {
     } else if (typeof e === "string") {
       log(e);
     } else if (e instanceof mavka.ThrowValue) {
-      log(e.value);
+      log(String(e.value));
     } else {
       log(String(e));
     }
   }
+}
+
+function clearHistory() {
+  history.value = [];
 }
 
 function close() {
@@ -176,6 +182,12 @@ onMounted(() => {
     <div class="ui-project-console">
       <template v-for="(line, i) in history" :key="i">
         <div class="ui-project-console-item">{{ line }}</div>
+      </template>
+
+      <template v-if="history.length">
+        <div @click="clearHistory" class="ui-project-console-clear">
+          <span class="material-icons">clear_all</span>
+        </div>
       </template>
     </div>
   </div>
@@ -348,6 +360,8 @@ onMounted(() => {
 }
 
 .ui-project-console {
+  position: relative;
+
   border-left: 1px solid var(--border-color);
   background: var(--card-color);
 
@@ -365,5 +379,29 @@ onMounted(() => {
 .ui-project-console-item {
   padding: 0.5rem;
   border-bottom: 1px solid var(--border-color);
+}
+
+.ui-project-console-clear {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 2rem;
+  height: 2rem;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  .material-icons {
+    font-size: 1rem;
+  }
 }
 </style>
