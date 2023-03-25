@@ -79,7 +79,7 @@ async function run() {
     } else if (typeof e === "string") {
       log(e);
     } else if (e instanceof mavka.ThrowValue) {
-      log(String(e.value));
+      log(String(e.value.asJsValue(mavka.context)));
     } else {
       log(String(e));
     }
