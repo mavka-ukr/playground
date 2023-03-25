@@ -42,11 +42,10 @@ async function run() {
 
   function buildGlobalContext(mavka) {
     return new mavka.Context(mavka, null, {
-      "друк": new mavka.JsFunctionCell(mavka, (args) => log(
+      "друк": mavka.makeProxyFunction((args, context) => log(
         ...args
-          .map((arg) => mavka.toCell(arg).asString().asJsString())
-      )),
-      "global": mavka.toCell(window)
+          .map((arg) => arg.asText().asJsValue(context))
+      ))
     });
   }
 
@@ -65,7 +64,8 @@ async function run() {
   const mavka = new Mavka({
     buildGlobalContext,
     buildLoader,
-    buildExternal
+    buildExternal,
+    global: window
   });
 
   try {
@@ -103,6 +103,9 @@ function closeNewFileDialog() {
 }
 
 function createNewFile(file) {
+  if (file.name.endsWith(".м")) {
+    file.name = file.name.substring(0, file.name.length - 2);
+  }
   project.value.files = [
     ...project.value.files,
     {
