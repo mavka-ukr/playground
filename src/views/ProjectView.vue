@@ -2,14 +2,43 @@
 import { currentProjectId, useProjects } from "@/store/projects.js";
 import { computed, nextTick, onMounted, ref, toRefs } from "vue";
 import { Codemirror } from "vue-codemirror";
-import { basicSetup } from "codemirror";
+import { basicSetup, EditorView } from "codemirror";
 import Mavka from "mavka";
 
 import { StreamLanguage } from "@codemirror/language";
 import { mavkaLang } from "@/views/mavkalang.js";
 import NewFileDialog from "@/components/dialogs/NewFileDialog.vue";
+import MemoryLoader from "@/mavka/memoryLoader.js";
+
+const isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+let darkTheme = EditorView.theme({
+  "&": {
+    color: "white",
+    backgroundColor: "var(--bg-color)"
+  },
+  ".cm-content": {
+    caretColor: "var(--text-color)"
+  },
+  "&.cm-focused .cm-cursor": {
+    borderLeftColor: "var(--text-color)"
+  },
+  "&.cm-focused .cm-selectionBackground, ::selection": {
+    backgroundColor: "var(--card-color)"
+  },
+  ".cm-gutters": {
+    backgroundColor: "var(--card-color)",
+    color: "var(--text-color)",
+    border: "none"
+  }
+}, { dark: true });
 
 const language = StreamLanguage.define(mavkaLang);
+
+const extensions = [basicSetup, language];
+if (isDarkMode) {
+  extensions.push(darkTheme);
+}
 
 const props = defineProps({
   project: Object
@@ -54,7 +83,7 @@ async function run() {
     for (const pFile of project.value.files) {
       files[pFile.name.substring(0, pFile.name.length - 2)] = pFile.content;
     }
-    return new mavka.MemoryLoader(mavka, files);
+    return new MemoryLoader(mavka, files);
   }
 
   function buildExternal(mavka) {
@@ -178,7 +207,7 @@ onMounted(() => {
           :autofocus="true"
           :indent-with-tab="true"
           :tab-size="2"
-          :extensions="[basicSetup, language]"
+          :extensions="extensions"
         />
       </div>
     </div>
@@ -227,6 +256,12 @@ onMounted(() => {
   background: var(--card-color);
 
   overflow-x: auto;
+}
+
+.ui-project-code {
+  .ͼb {
+    font-weight: 500;
+  }
 }
 
 .ui-project-page-tab {
