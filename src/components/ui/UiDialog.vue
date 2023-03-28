@@ -52,6 +52,8 @@ defineEmits(["close"]);
 
   padding: 0.75rem;
 
+  min-height: 57px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;

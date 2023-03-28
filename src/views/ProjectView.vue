@@ -9,6 +9,7 @@ import { StreamLanguage } from "@codemirror/language";
 import { mavkaLang } from "@/views/mavkalang.js";
 import NewFileDialog from "@/components/dialogs/NewFileDialog.vue";
 import MemoryLoader from "@/mavka/memoryLoader.js";
+import LoadingDialog from "@/components/dialogs/LoadingDialog.vue";
 
 const isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -66,6 +67,8 @@ function log(...value) {
   history.value = [...history.value, value.join(" ")];
 }
 
+const loading = ref("");
+
 async function run() {
   history.value = [];
 
@@ -95,6 +98,19 @@ async function run() {
     buildLoader,
     buildExternal,
     global: window
+  });
+
+  mavka.events.on("module::load::remote::start", ({ url }) => {
+    loading.value = `[0%] ${url}`;
+  });
+  mavka.events.on("module::load::remote::progress", ({ url, progress }) => {
+    loading.value = `[${progress}%] ${url}`;
+  });
+  mavka.events.on("module::load::remote::stop", () => {
+    loading.value = ``;
+  });
+  mavka.events.on("module::load::remote::failed", () => {
+    loading.value = ``;
   });
 
   try {
@@ -169,6 +185,13 @@ onMounted(() => {
 </script>
 
 <template>
+  <template v-if="loading">
+    <LoadingDialog>
+      <div style="text-align: center; padding-bottom: 1rem">
+        {{ loading }}
+      </div>
+    </LoadingDialog>
+  </template>
   <template v-if="newFileDialogOpen">
     <NewFileDialog @close="closeNewFileDialog" @save="createNewFile" />
   </template>
