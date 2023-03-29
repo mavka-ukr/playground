@@ -73,9 +73,9 @@ class MemoryLoader {
       url = `https://${url}`;
     }
 
-    let module = this.loadedRemoteModules[url];
+    let module = this.loadedRemoteModules[rawUrl];
 
-    if (!this.loadedRemoteModules[url]) {
+    if (!this.loadedRemoteModules[rawUrl]) {
       const moduleContext = new this.mavka.Context(this.mavka, context);
       moduleContext.setAsync(true);
 
@@ -102,7 +102,7 @@ class MemoryLoader {
       module = this.mavka.makeModule("");
       moduleContext.setModule(module);
 
-      this.loadedRemoteModules[url] = module;
+      this.loadedRemoteModules[rawUrl] = module;
 
       await this.mavka.run(moduleContext, moduleProgram.body);
     }
