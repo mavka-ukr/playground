@@ -1,6 +1,8 @@
 import { parse } from "mavka-parser";
 import axios from "axios";
 
+const cachedRemoteModules = {};
+
 class MemoryLoader {
   constructor(mavka, files = {}) {
     this.mavka = mavka;
@@ -79,23 +81,29 @@ class MemoryLoader {
       const moduleContext = new this.mavka.Context(this.mavka, context);
       moduleContext.setAsync(true);
 
-      const moduleCode = await axios
-        .get(url, {
-          onDownloadProgress: (progressEvent) => {
-            if (options.onProgress) {
-              options.onProgress(Math.floor(progressEvent.progress * 100));
-            }
-          },
-          responseType: "text"
-        })
-        .then((r) => String(r.data))
-        .catch((e) => {
-          if (options.onFailed) {
-            options.onFailed(e);
-          }
+      let moduleCode = cachedRemoteModules[rawUrl];
 
-          this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити "${rawUrl}".`));
-        });
+      if (moduleCode == null) {
+        moduleCode = await axios
+          .get(url, {
+            onDownloadProgress: (progressEvent) => {
+              if (options.onProgress) {
+                options.onProgress(Math.floor(progressEvent.progress * 100));
+              }
+            },
+            responseType: "text"
+          })
+          .then((r) => String(r.data))
+          .catch((e) => {
+            if (options.onFailed) {
+              options.onFailed(e);
+            }
+
+            this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити "${rawUrl}".`));
+          });
+
+        cachedRemoteModules[rawUrl] = moduleCode;
+      }
 
       const moduleProgram = parse(moduleCode);
 

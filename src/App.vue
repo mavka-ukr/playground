@@ -3,6 +3,7 @@ import { currentProjectId, useProjects } from "@/store/projects.js";
 import ProjectView from "@/views/ProjectView.vue";
 import HomeView from "@/views/HomeView.vue";
 import { computed } from "vue";
+import FrameWindow from "@/components/windows/FrameWindow.vue";
 
 const { projects } = useProjects();
 
