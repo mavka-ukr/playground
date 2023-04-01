@@ -3,13 +3,13 @@ import { currentProjectId, useProjects } from "@/store/projects.js";
 import { computed, nextTick, onMounted, ref, toRefs } from "vue";
 import { Codemirror } from "vue-codemirror";
 import { basicSetup, EditorView } from "codemirror";
-import Mavka from "mavka";
 
 import { StreamLanguage } from "@codemirror/language";
 import { mavkaLang } from "@/views/mavkalang.js";
 import NewFileDialog from "@/components/dialogs/NewFileDialog.vue";
-import MemoryLoader from "@/mavka/memoryLoader.js";
 import LoadingDialog from "@/components/dialogs/LoadingDialog.vue";
+import { bundle } from "@/mavka/bundler.js";
+import FrameWindow from "@/components/windows/FrameWindow.vue";
 
 const isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -46,11 +46,23 @@ const props = defineProps({
 });
 const { project } = toRefs(props);
 
+const showWindow = ref(false);
+
+const isRunning = ref(false);
+
+const isStopped = ref(false);
+
+const isEnded = ref(false);
+
 const currentFile = ref(null);
 
 const newFileDialogOpen = ref(false);
 
+let runCount = 0;
+
 const { updateProject } = useProjects();
+
+const fullCode = ref("");
 
 const code = computed({
   get() {
@@ -70,64 +82,36 @@ function log(...value) {
 const loading = ref("");
 
 async function run() {
-  history.value = [];
+  if (isRunning.value) {
+    isStopped.value = true;
+    isRunning.value = false;
+  } else {
+    history.value = [];
+    isRunning.value = true;
+    isEnded.value = false;
+    isStopped.value = false;
 
-  function buildGlobalContext(mavka) {
-    return new mavka.Context(mavka, null, {
-      "друк": mavka.makeProxyFunction((args, context) => log(
-        ...args
-          .map((arg) => arg.asText().asJsValue(context))
-      ))
-    });
+    fullCode.value = bundle(code.value, project.value.files);
+    runCount++;
   }
+}
 
-  function buildLoader(mavka) {
-    const files = {};
-    for (const pFile of project.value.files) {
-      files[pFile.name.substring(0, pFile.name.length - 2)] = pFile.content;
-    }
-    return new MemoryLoader(mavka, files);
+function onFrameEvent(event) {
+  if (event.type === "log") {
+    log(...event.value);
   }
-
-  function buildExternal(mavka) {
-    return {};
+  if (event.type === "showcase") {
+    showWindow.value = true;
   }
-
-  const mavka = new Mavka({
-    buildGlobalContext,
-    buildLoader,
-    buildExternal,
-    global: window
-  });
-
-  mavka.events.on("module::load::remote::start", ({ url }) => {
-    loading.value = `[0%] ${url}`;
-  });
-  mavka.events.on("module::load::remote::progress", ({ url, progress }) => {
-    loading.value = `[${progress}%] ${url}`;
-  });
-  mavka.events.on("module::load::remote::stop", () => {
-    loading.value = ``;
-  });
-  mavka.events.on("module::load::remote::failed", () => {
-    loading.value = ``;
-  });
-
-  try {
-    const mainContext = new mavka.Context(mavka, mavka.context);
-    mainContext.setAsync(true);
-
-    await mavka.eval(code.value, mainContext);
-  } catch (e) {
-    if (e instanceof Error) {
-      log(e.message);
-    } else if (typeof e === "string") {
-      log(e);
-    } else if (e instanceof mavka.ThrowValue) {
-      log(String(e.value.asJsValue(mavka.context)));
-    } else {
-      log(String(e));
-    }
+  if (event.type === "hidecase") {
+    showWindow.value = false;
+  }
+  if (event.type === "ended") {
+    isEnded.value = false;
+    isRunning.value = false;
+  }
+  if (event.type === "loading") {
+    loading.value = event.value;
   }
 }
 
@@ -154,7 +138,7 @@ function createNewFile(file) {
   project.value.files = [
     ...project.value.files,
     {
-      name: file.name + ".м",
+      name: `${file.name}.м`,
       content: ""
     }
   ];
@@ -185,6 +169,13 @@ onMounted(() => {
 </script>
 
 <template>
+  <template v-if="fullCode && runCount && !isStopped">
+    <FrameWindow @close="showWindow = false"
+                 @frame-event="onFrameEvent"
+                 v-show="showWindow"
+                 :code="fullCode"
+                 :key="runCount" />
+  </template>
   <template v-if="loading">
     <LoadingDialog>
       <div style="text-align: center; padding-bottom: 1rem">
@@ -204,10 +195,18 @@ onMounted(() => {
         <div class="ui-project-page-header-title">
           {{ project.name }}
         </div>
-        <div @click="run" class="ui-project-page-header-button play">
-          <span class="material-icons">play_arrow</span>
-          Запустити
-        </div>
+        <template v-if="isRunning">
+          <div @click="run" class="ui-project-page-header-button stop">
+            <span class="material-icons">stop</span>
+            Зупинити
+          </div>
+        </template>
+        <template v-else>
+          <div @click="run" class="ui-project-page-header-button play">
+            <span class="material-icons">play_arrow</span>
+            Запустити
+          </div>
+        </template>
       </div>
       <div class="ui-project-page-tabs">
         <template v-for="file in project.files" :key="file.name">
@@ -238,6 +237,10 @@ onMounted(() => {
       <template v-for="(line, i) in history" :key="i">
         <div class="ui-project-console-item">{{ line }}</div>
       </template>
+
+      <div class="ui-project-console-loading">
+
+      </div>
 
       <template v-if="history.length">
         <div @click="clearHistory" class="ui-project-console-clear">

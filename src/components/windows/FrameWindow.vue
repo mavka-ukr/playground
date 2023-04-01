@@ -1,17 +1,52 @@
 <script setup>
-defineProps({
+import { computed, onBeforeUnmount, onMounted } from "vue";
+import { Buffer } from "buffer";
+
+const showcaseUrl = `https://вітрина.мавка.укр`;
+// const showcaseUrl = `http://localhost:3005`;
+
+const emit = defineEmits(["frameEvent", "close"]);
+
+const props = defineProps({
   code: String
+});
+
+const encodedCode = computed(() => Buffer.from(props.code).toString("base64"));
+
+function handleMessageEvent(event) {
+  if (event.data) {
+    try {
+      const data = JSON.parse(event.data);
+
+      emit("frameEvent", data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("message", handleMessageEvent, false);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("message", handleMessageEvent, false);
 });
 </script>
 
 <template>
   <div class="ui-window">
     <div class="ui-window-header">
-      Window X
+      <div @click="emit('close')" class="ui-window-header-close">
+        <span class="material-icons">close</span>
+      </div>
+      <div class="ui-window-header-title">
+        Вітрина
+      </div>
     </div>
 
     <div class="ui-window-body">
-      <iframe :src="`/window.html#code=${encodeURIComponent(code)}`" />
+      <iframe :src="`${showcaseUrl}/#code=${encodedCode}`" />
     </div>
   </div>
 </template>
@@ -29,8 +64,31 @@ defineProps({
     display: flex;
     align-items: center;
     background: var(--card-color);
-    padding: 0 1rem;
     font-weight: 500;
+
+    .ui-window-header-close {
+      width: 50px;
+      height: 50px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 1rem;
+
+      cursor: pointer;
+
+      &:hover {
+        background: var(--bg-color);
+        color: var(--text-color);
+      }
+    }
+
+    .ui-window-header-title {
+      margin-left: 0.5rem;
+      font-weight: 500;
+      font-size: 1.2rem;
+    }
   }
 
   .ui-window-body {
