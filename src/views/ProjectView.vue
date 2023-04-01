@@ -7,7 +7,6 @@ import { basicSetup, EditorView } from "codemirror";
 import { StreamLanguage } from "@codemirror/language";
 import { mavkaLang } from "@/views/mavkalang.js";
 import NewFileDialog from "@/components/dialogs/NewFileDialog.vue";
-import LoadingDialog from "@/components/dialogs/LoadingDialog.vue";
 import { bundle } from "@/mavka/bundler.js";
 import FrameWindow from "@/components/windows/FrameWindow.vue";
 
@@ -85,11 +84,13 @@ async function run() {
   if (isRunning.value) {
     isStopped.value = true;
     isRunning.value = false;
+    loading.value = "";
   } else {
     history.value = [];
     isRunning.value = true;
     isEnded.value = false;
     isStopped.value = false;
+    loading.value = "starting...";
 
     fullCode.value = bundle(code.value, project.value.files);
     runCount++;
@@ -109,9 +110,13 @@ function onFrameEvent(event) {
   if (event.type === "ended") {
     isEnded.value = false;
     isRunning.value = false;
+    loading.value = "";
   }
   if (event.type === "loading") {
     loading.value = event.value;
+  }
+  if (event.type === "start") {
+    loading.value = "";
   }
 }
 
@@ -176,13 +181,6 @@ onMounted(() => {
                  :code="fullCode"
                  :key="runCount" />
   </template>
-  <template v-if="loading">
-    <LoadingDialog>
-      <div style="text-align: center; padding-bottom: 1rem">
-        {{ loading }}
-      </div>
-    </LoadingDialog>
-  </template>
   <template v-if="newFileDialogOpen">
     <NewFileDialog @close="closeNewFileDialog" @save="createNewFile" />
   </template>
@@ -238,9 +236,12 @@ onMounted(() => {
         <div class="ui-project-console-item">{{ line }}</div>
       </template>
 
-      <div class="ui-project-console-loading">
-
-      </div>
+      <template v-if="loading">
+        <div class="ui-project-console-loading">
+          <img class="logo-light" src="@/assets/images/logo-light.png" alt="">
+          <img class="logo-dark" src="@/assets/images/logo-dark.png" alt="">
+        </div>
+      </template>
 
       <template v-if="history.length">
         <div @click="clearHistory" class="ui-project-console-clear">
@@ -254,6 +255,65 @@ onMounted(() => {
 <style lang="scss">
 .ui-project-page {
   //
+}
+
+
+.logo-dark,
+.logo-light {
+  display: none;
+}
+
+.cs-light {
+  .logo-dark {
+    display: none;
+  }
+
+  .logo-light {
+    display: inline;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ui-project-console-loading {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 50px;
+    height: 50px;
+
+    animation: spin 500ms linear infinite;
+  }
+
+  &::before {
+    position: absolute;
+    content: '';
+    inset: 0;
+    background-color: rgba(white, 0.1);
+    backdrop-filter: blur(0.5rem);
+  }
+}
+
+.cs-dark {
+  .logo-light {
+    display: none;
+  }
+
+  .logo-dark {
+    display: inline;
+  }
 }
 
 .ui-project-page-header {
