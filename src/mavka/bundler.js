@@ -1,6 +1,8 @@
 import { parse } from "mavka-parser";
 import TakeModuleNode from "mavka-parser/src/ast/TakeModuleNode.js";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
+import startupModulesEncoded from "virtual:mavka-startup-modules";
+import { Buffer } from "buffer";
 
 function generateRandomCyrillicChar() {
   const charCode = Math.floor(Math.random() * (0x044F - 0x0410 + 1)) + 0x0410;
@@ -9,6 +11,20 @@ function generateRandomCyrillicChar() {
 
 export function bundle(module, rawFiles = {}) {
   const bundled = {};
+
+  if (Array.isArray(rawFiles)) {
+    const decoded = Buffer.from(startupModulesEncoded, 'base64').toString('utf-8').replaceAll("\\\\", "\\");
+
+    const startupModuleFiles = JSON.parse(decoded);
+
+    if (!Array.isArray(startupModuleFiles)) {
+      throw `Не вдалось завантажити вбудовані модулі.`;
+    }
+
+    if (startupModuleFiles.length > 0) {
+      rawFiles = startupModuleFiles.concat(rawFiles);
+    }
+  }
 
   const files = {};
   for (const rawFile of rawFiles) {
