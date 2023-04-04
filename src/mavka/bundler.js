@@ -78,7 +78,7 @@ ${files[name]}
         if (asName) {
           content += `\n${asName} = ${randomName}.${name}`;
         } else {
-          content += `\n${name} = ${randomName}`;
+          content += `\n${name} = ${randomName}.${name}`;
         }
       }
 
