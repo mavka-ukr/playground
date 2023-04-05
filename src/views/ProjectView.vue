@@ -39,6 +39,9 @@ let darkTheme = EditorView.theme({
   ".ͼd": {
     color: "#d19a66"
   },
+  ".ͼi": {
+    color: "#56b6c2"
+  },
   ".cm-activeLine": {
     backgroundColor: "#222227"
   }
@@ -339,6 +342,8 @@ onMounted(() => {
 
 .cm-line {
   font-family: "Fira Code", monospace;
+  //font-weight: 500;
+  //color: #3f3f3f;
 }
 
 .ui-project-page-tabs {

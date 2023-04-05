@@ -6,6 +6,19 @@ function wordRE(words) {
   return new RegExp(`^(?:${words.join("|")})$`, "u");
 }
 
+const types = wordRE([
+  "текст",
+  "логічне",
+  "число",
+  "список",
+  "словник",
+  "обʼєкт",
+  "щось",
+  "ніщо",
+  "так",
+  "ні",
+  "пусто"
+]);
 const keywords = wordRE([
   "дія",
   "структура",
@@ -38,19 +51,7 @@ const keywords = wordRE([
   "втілює",
   "js",
   "кінець",
-  "не",
-
-  "текст",
-  "логічне",
-  "число",
-  "список",
-  "словник",
-  "обʼєкт",
-  "щось",
-  "ніщо",
-  "так",
-  "ні",
-  "пусто"
+  "не"
 ]);
 
 const indentTokens = wordRE([
@@ -173,6 +174,8 @@ export const mavkaLang = {
     if (style === "variable") {
       if (keywords.test(word)) {
         style = "keyword";
+      } else if (types.test(word)) {
+        style = "typeName";
       }
     }
 
@@ -193,7 +196,7 @@ export const mavkaLang = {
   },
 
   languageData: {
-    indentOnInput: /^\s*(?:кінець|інакше|\)|\})$/,
+    indentOnInput: /^\s*(?:кінець|інакше|зловити|\)|\})$/,
     commentTokens: { line: ";;", block: { open: ";--", close: "--;" } }
   }
 };
