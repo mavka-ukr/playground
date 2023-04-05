@@ -14,8 +14,10 @@ const isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme
 
 let darkTheme = EditorView.theme({
   "&": {
-    color: "white",
-    backgroundColor: "var(--bg-color)"
+    color: "#abb2bf",
+    backgroundColor: "var(--card-color)",
+    fontFamily: "Fira Code, monospace",
+    fontWeight: 500
   },
   ".cm-content": {
     caretColor: "var(--text-color)"
@@ -23,13 +25,22 @@ let darkTheme = EditorView.theme({
   "&.cm-focused .cm-cursor": {
     borderLeftColor: "var(--text-color)"
   },
-  "&.cm-focused .cm-selectionBackground, ::selection": {
-    backgroundColor: "var(--card-color)"
-  },
   ".cm-gutters": {
     backgroundColor: "var(--card-color)",
     color: "var(--text-color)",
     border: "none"
+  },
+  ".ͼb": {
+    color: "#c678dd"
+  },
+  ".ͼe": {
+    color: "#98c379"
+  },
+  ".ͼd": {
+    color: "#d19a66"
+  },
+  ".cm-activeLine": {
+    backgroundColor: "#222227"
   }
 }, { dark: true });
 
