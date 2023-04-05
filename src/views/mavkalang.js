@@ -6,7 +6,6 @@ function wordRE(words) {
   return new RegExp("^(?:" + words.join("|") + ")", "u");
 }
 
-const types = wordRE([]);
 const keywords = wordRE([
   "дія",
   "структура",
@@ -158,8 +157,6 @@ export const mavkaLang = {
     if (style === "variable") {
       if (keywords.test(word)) {
         style = "keyword";
-      } else if (types.test(word)) {
-        style = "typeName";
       }
     }
 
