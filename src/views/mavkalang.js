@@ -1,9 +1,9 @@
 function prefixRE(words) {
-  return new RegExp("^(?:" + words.join("|") + ")", "u");
+  return new RegExp(`^(?:${words.join("|")})`, "u");
 }
 
 function wordRE(words) {
-  return new RegExp("^(?:" + words.join("|") + ")", "u");
+  return new RegExp(`^(?:${words.join("|")})$`, "u");
 }
 
 const keywords = wordRE([
@@ -53,9 +53,25 @@ const keywords = wordRE([
   "пусто"
 ]);
 
-const indentTokens = wordRE(["дія", "якщо", "перебрати", "поки", "структура", "модуль", "спробувати", "\\("]);
-const dedentTokens = wordRE(["кінець", "\\)"]);
-const dedentPartial = prefixRE(["кінець", "зловити", "\\)"]);
+const indentTokens = wordRE([
+  "дія",
+  "якщо",
+  "перебрати",
+  "поки",
+  "структура",
+  "модуль",
+  "спробувати",
+  "\\("
+]);
+const dedentTokens = wordRE([
+  "кінець",
+  "\\)"
+]);
+const dedentPartial = prefixRE([
+  "кінець",
+  "зловити",
+  "\\)"
+]);
 
 function readBracket(stream) {
   let level = 0;
