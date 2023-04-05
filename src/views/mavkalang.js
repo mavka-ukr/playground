@@ -51,7 +51,8 @@ const keywords = wordRE([
   "втілює",
   "js",
   "кінець",
-  "не"
+  "не",
+  "я"
 ]);
 
 const indentTokens = wordRE([
