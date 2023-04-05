@@ -1,44 +1,62 @@
 function prefixRE(words) {
-  return new RegExp("^(?:" + words.join("|") + ")", "ui");
+  return new RegExp("^(?:" + words.join("|") + ")", "u");
 }
 
 function wordRE(words) {
-  return new RegExp("^(?:" + words.join("|") + ")", "ui");
+  return new RegExp("^(?:" + words.join("|") + ")", "u");
 }
 
-const types = wordRE([
-  "число",
-  "текст",
-  "логічне",
-  "пусто",
-  "так",
-  "ні",
-  "обʼєкт",
-  "список",
-  "словник"
-]);
+const types = wordRE([]);
 const keywords = wordRE([
   "дія",
-  "якщо",
-  "не",
-  "кінець",
   "структура",
+  "перебрати",
+  "якщо",
+  "чекати",
+  "взяти",
+  "дати",
+  "як",
+  "є",
+  "вернути",
+  "тривала",
+  "і",
+  "або",
+  "спробувати",
+  "зловити",
+  "інакше",
+  "впасти",
+  "поки",
+  "модуль",
+  "рівно",
   "більше",
   "менше",
+  "більше",
+  "менше",
+  "рівно",
   "є",
-  "дати",
-  "взяти",
-  "перебрати",
-  "модуль",
-  "впасти",
-  "я",
-  "інакше",
-  "поки"
+  "містить",
+  "макет",
+  "втілює",
+  "js",
+  "кінець",
+  "не",
+
+  "текст",
+  "логічне",
+  "число",
+  "список",
+  "словник",
+  "обʼєкт",
+  "щось",
+  "ніщо",
+  "так",
+  "ні",
+  "пусто"
 ]);
 
-const indentTokens = wordRE(["дія", "якщо", "перебрати", "поки", "структура", "модуль", "\\("]);
+const indentTokens = wordRE(["дія", "якщо", "перебрати", "поки", "структура", "модуль", "спробувати", "\\("]);
 const dedentTokens = wordRE(["кінець", "\\)"]);
-const dedentPartial = prefixRE(["кінець", "\\)"]);
+const dedentPartial = prefixRE(["кінець", "зловити", "\\)"]);
 
 function readBracket(stream) {
   let level = 0;
@@ -68,12 +86,12 @@ function normal(stream, state) {
   }
 
   if (/\d/.test(ch)) {
-    stream.eatWhile(/[\wа-яА-ЯіІїЇєЄґҐ.%ʼ]/ui);
+    stream.eatWhile(/[\wа-яА-ЯіІїЇєЄґҐ.%ʼ]/u);
     return "number";
   }
 
-  if (/[\w_а-яА-ЯіІїЇєЄґҐʼ]/ui.test(ch)) {
-    stream.eatWhile(/[\wа-яА-ЯіІїЇєЄґҐ\\\-_.ʼ]/ui);
+  if (/[\w_а-яА-ЯіІїЇєЄґҐʼ]/u.test(ch)) {
+    stream.eatWhile(/[\wа-яА-ЯіІїЇєЄґҐ\\\-_ʼ]/u);
     return "variable";
   }
 

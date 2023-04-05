@@ -3,6 +3,7 @@ import { currentProjectId, useProjects } from "@/store/projects.js";
 import ProjectView from "@/views/ProjectView.vue";
 import HomeView from "@/views/HomeView.vue";
 import { computed } from "vue";
+import Editor from "@/components/Editor.vue";
 
 const { projects } = useProjects();
 
@@ -12,11 +13,16 @@ const project = computed(() => {
 </script>
 
 <template>
-  <template v-if="currentProjectId">
-    <ProjectView :project="project" />
+  <template v-if="false">
+    <Editor />
   </template>
   <template v-else>
-    <HomeView />
+    <template v-if="currentProjectId">
+      <ProjectView :project="project" />
+    </template>
+    <template v-else>
+      <HomeView />
+    </template>
   </template>
 </template>
 
