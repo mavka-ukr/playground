@@ -86,10 +86,18 @@ const code = computed({
   }
 });
 
-const history = ref([]);
+const rawHistory = ref("");
 
-function log(...value) {
-  history.value = [...history.value, value.join(" ")];
+const history = computed(() => {
+  let strings = rawHistory.value.split("\n");
+  if (strings[strings.length - 1] === "") {
+    strings = strings.slice(0, -1);
+  }
+  return strings;
+});
+
+function log(value) {
+  rawHistory.value += value;
 }
 
 const loading = ref("");
@@ -100,7 +108,7 @@ async function run() {
     isRunning.value = false;
     loading.value = "";
   } else {
-    history.value = [];
+    rawHistory.value = "";
     isRunning.value = true;
     isEnded.value = false;
     isStopped.value = false;
@@ -113,7 +121,10 @@ async function run() {
 
 function onFrameEvent(event) {
   if (event.type === "log") {
-    log(...event.value);
+    log(event.value.join(" ") + "\n");
+  }
+  if (event.type === "print") {
+    log(event.value.join(""));
   }
   if (event.type === "showcase") {
     showWindow.value = true;
@@ -135,7 +146,7 @@ function onFrameEvent(event) {
 }
 
 function clearHistory() {
-  history.value = [];
+  rawHistory.value = "";
 }
 
 function close() {

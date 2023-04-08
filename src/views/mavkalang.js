@@ -17,7 +17,8 @@ const types = wordRE([
   "ніщо",
   "так",
   "ні",
-  "пусто"
+  "пусто",
+  "Дія"
 ]);
 const keywords = wordRE([
   "дія",
