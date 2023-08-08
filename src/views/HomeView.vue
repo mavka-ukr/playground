@@ -38,7 +38,7 @@ function removeProject(project) {
 
   <div class="ui-home-page">
     <div class="ui-home-page-logo">
-      <img src="@/assets/images/logo.svg" alt="Logo">
+      <img src="@/assets/images/logo.png" alt="Logo">
     </div>
 
     <div class="ui-home-page-content">
