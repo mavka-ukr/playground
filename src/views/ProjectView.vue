@@ -114,7 +114,15 @@ async function run() {
     isStopped.value = false;
     loading.value = "starting...";
 
-    fullCode.value = bundle(code.value, project.value.files);
+    try {
+      fullCode.value = bundle(code.value, project.value.files);
+    } catch (e) {
+      alert(e.message);
+      isRunning.value = false;
+      isEnded.value = true;
+      loading.value = "";
+      return;
+    }
     runCount++;
   }
 }
@@ -319,7 +327,7 @@ onMounted(() => {
     width: 50px;
     height: 50px;
 
-    animation: spin 500ms linear infinite;
+    animation: spin 500ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
   &::before {

@@ -20,7 +20,7 @@ function handleMessageEvent(event) {
 
       emit("frameEvent", data);
     } catch (e) {
-      console.error(e);
+      alert(e);
     }
   }
 }

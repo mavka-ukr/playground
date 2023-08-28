@@ -8,7 +8,7 @@ import Mavka from "mavka";
 
 dayjs.extend(relativeTime);
 
-const { projects, deleteProject } = useProjects();
+const { projects, deleteProject, createProject } = useProjects();
 
 const createDialogOpen = ref(false);
 
@@ -28,6 +28,11 @@ function removeProject(project) {
   if (window.confirm("Дійсно видалити цей проєкт?")) {
     deleteProject(project);
   }
+}
+
+function createHelloFromLesia() {
+  const newProject = createProject("Привіт від Лесі");
+  currentProjectId.value = newProject.id;
 }
 </script>
 
@@ -70,7 +75,7 @@ function removeProject(project) {
         Приклади
       </h3>
       <ul class="ui-home-page-projects">
-        <li class="ui-home-page-project">
+        <li class="ui-home-page-project" @click="createHelloFromLesia">
           <div class="ui-home-page-project-name">
             Привіт від Лесі
           </div>
@@ -78,9 +83,9 @@ function removeProject(project) {
             <div class="ui-home-page-project-badge">
               консольна програма
             </div>
-            <div class="ui-home-page-project-badge">
-              скоро
-            </div>
+          </div>
+          <div class="ui-home-page-project-delete-button create">
+            <span class="material-icons">add</span>
           </div>
         </li>
         <li class="ui-home-page-project">
@@ -224,6 +229,11 @@ function removeProject(project) {
       &:hover {
         background: rgba(red, 0.25);
         color: red;
+      }
+
+      &.create:hover {
+        background: rgba(green, 0.25);
+        color: green;
       }
     }
 
