@@ -13,7 +13,7 @@ const createDialogOpen = ref(false);
 const version = ref("а.б.в");
 
 onMounted(() => {
-  fetch("https://запуск.мавка.укр/список.txt")
+  fetch(`https://запуск.мавка.укр/список.txt?t=${new Date().getTime()}`)
     .then((r) => r.text())
     .then((t) => t.split("\n")[1])
     .then((v) => version.value = v);
