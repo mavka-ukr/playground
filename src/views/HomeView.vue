@@ -1,16 +1,23 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import NewProjectDialog from "@/components/dialogs/NewProjectDialog.vue";
 import { currentProjectId, useProjects } from "@/store/projects.js";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import Mavka from "mavka";
 
 dayjs.extend(relativeTime);
 
 const { projects, deleteProject, createProject } = useProjects();
 
 const createDialogOpen = ref(false);
+const version = ref("а.б.в");
+
+onMounted(() => {
+  fetch("https://запуск.мавка.укр/список.txt")
+    .then((r) => r.text())
+    .then((t) => t.split("\n")[1])
+    .then((v) => version.value = v);
+});
 
 function openCreateDialog() {
   createDialogOpen.value = true;
@@ -158,7 +165,7 @@ function createHelloFromLesia() {
   </div>
   <footer class="footer">
     <a href="https://мавка.укр" target="_blank">мавка.укр</a>
-    <span class="footer-version">({{ Mavka.VERSION }})</span>
+    <span class="footer-version">({{ version }})</span>
   </footer>
 </template>
 
