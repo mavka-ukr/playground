@@ -1,4 +1,25 @@
-import { computed, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
+import axios from "axios";
+
+export const versionsState = reactive({
+  isLoadingVersions: false,
+  versions: []
+});
+
+(async function() {
+  versionsState.isLoadingVersions = true;
+
+  try {
+    const response = await axios.get("https://запуск.мавка.укр/список.txt");
+    const versionsText = response.data;
+
+    versionsState.versions = versionsText.split("\n").filter((v) => v && v !== "остання");
+  } catch (e) {
+    console.error(e);
+  } finally {
+    versionsState.isLoadingVersions = false;
+  }
+})();
 
 export const currentProjectId = ref(null);
 

@@ -7,8 +7,8 @@ import { basicSetup, EditorView } from "codemirror";
 import { StreamLanguage } from "@codemirror/language";
 import { mavkaLang } from "@/views/mavkalang.js";
 import NewFileDialog from "@/components/dialogs/NewFileDialog.vue";
-import { bundle } from "@/mavka/bundler.js";
 import FrameWindow from "@/components/windows/FrameWindow.vue";
+import { versionsState } from "../store/projects.js";
 
 const isDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -60,22 +60,15 @@ const props = defineProps({
 const { project } = toRefs(props);
 
 const showWindow = ref(false);
-
 const isRunning = ref(false);
-
 const isStopped = ref(false);
-
 const isEnded = ref(false);
-
 const currentFile = ref(null);
-
 const newFileDialogOpen = ref(false);
-
 let runCount = 0;
-
 const { updateProject } = useProjects();
-
 const fullCode = ref("");
+const version = ref("остання");
 
 const code = computed({
   get() {
@@ -115,7 +108,7 @@ async function run() {
     loading.value = "starting...";
 
     try {
-      fullCode.value = bundle(code.value, project.value.files);
+      fullCode.value = code.value;
     } catch (e) {
       alert(e.message);
       isRunning.value = false;
@@ -139,6 +132,13 @@ function onFrameEvent(event) {
   }
   if (event.type === "hidecase") {
     showWindow.value = false;
+  }
+  if (event.type === "failed") {
+    isEnded.value = false;
+    isRunning.value = false;
+    loading.value = "";
+    isStopped.value = true;
+    log(event.value + "\n");
   }
   if (event.type === "ended") {
     isEnded.value = false;
@@ -212,7 +212,9 @@ onMounted(() => {
                  @frame-event="onFrameEvent"
                  v-show="showWindow"
                  :code="fullCode"
-                 :key="runCount" />
+                 :version="version"
+                 :files="project.files"
+                 :key="runCount + '.' + version" />
   </template>
   <template v-if="newFileDialogOpen">
     <NewFileDialog @close="closeNewFileDialog" @save="createNewFile" />
@@ -226,6 +228,12 @@ onMounted(() => {
         <div class="ui-project-page-header-title">
           {{ project.name }}
         </div>
+        <select v-model="version" class="ui-project-page-header-button" style="margin-left: auto;">
+          <option value="остання">Остання</option>
+          <template v-for="v in versionsState.versions">
+            <option :value="v">{{ v }}</option>
+          </template>
+        </select>
         <template v-if="isRunning">
           <div @click="run" class="ui-project-page-header-button stop">
             <span class="material-icons">stop</span>
@@ -477,14 +485,16 @@ onMounted(() => {
 }
 
 .ui-project-page-header-button {
-  margin-left: auto;
-
   padding: 0 1rem;
   height: 50px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  outline: none;
 
   font-size: 1rem;
 

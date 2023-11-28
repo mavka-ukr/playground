@@ -2,16 +2,20 @@
 import { computed, onBeforeUnmount, onMounted } from "vue";
 import { Buffer } from "buffer";
 
-const showcaseUrl = `https://вітрина.мавка.укр`;
-// const showcaseUrl = `http://localhost:3005`;
+const showcaseUrl = `https://запуск.мавка.укр`;
 
 const emit = defineEmits(["frameEvent", "close"]);
 
 const props = defineProps({
-  code: String
+  code: String,
+  files: Array,
+  version: String
 });
 
 const encodedCode = computed(() => Buffer.from(props.code).toString("base64"));
+const encodedFiles = computed(() =>
+  Buffer.from(JSON.stringify(props.files)).toString("base64")
+);
 
 function handleMessageEvent(event) {
   if (event.data) {
@@ -46,7 +50,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="ui-window-body">
-      <iframe :src="`${showcaseUrl}/#code=${encodedCode}`" />
+      <iframe :src="`${showcaseUrl}/${version}/#code=${encodedCode}&files=${encodedFiles}`" />
     </div>
   </div>
 </template>
