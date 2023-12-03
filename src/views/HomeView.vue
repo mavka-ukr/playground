@@ -41,6 +41,66 @@ function createHelloFromLesia() {
   const newProject = createProject("Привіт від Лесі");
   currentProjectId.value = newProject.id;
 }
+
+function createTelegramBot() {
+  const newProject = createProject("Телеграм-бот", `
+взяти "запит"
+взяти "json"
+
+ТОКЕН = читати("ТОКЕН: ")
+УРЛ = "https://api.telegram.org/bot%(ТОКЕН)"
+
+працює = так
+останнє_оновлення = пусто
+
+тривала дія виконати_метод(назва текст, параметри словник = ()) щось
+  чекати відповідь = запит.надіслати(
+    "POST",
+    УРЛ + "/" + назва,
+    ("content-type"="application/json"),
+    json.stringify(параметри)
+  )
+  вернути json.parse(текст(відповідь.дані))
+кінець
+
+чекати me = виконати_метод("getMe")
+якщо me["ok"]
+  друк("Бот:", me["result"])
+інакше
+  впасти """Помилка отримання інформації про бота: %(me["description"])"""
+кінець
+
+поки працює
+  якщо останнє_оновлення
+    чекати дані = виконати_метод("getUpdates", (offset=(останнє_оновлення["update_id"] + 1)))
+  інакше
+    чекати дані = виконати_метод("getUpdates")
+  кінець
+
+  якщо !дані["ok"]
+    впасти """Помилка отримання оновлень: %(дані["description"])"""
+  інакше
+    оновлення = дані["result"]
+
+    перебрати оновлення як о
+      останнє_оновлення = о
+
+      друк("Оновлення:", о)
+
+      якщо останнє_оновлення["message"]
+        якщо останнє_оновлення["message"]["text"] == "/start"
+          чекати виконати_метод("sendMessage", (
+            chat_id=останнє_оновлення["message"]["chat"]["id"],
+            text="Привіт!"
+          ))
+        кінець
+      кінець
+    кінець
+  кінець
+кінець
+`.trim());
+  currentProjectId.value = newProject.id;
+}
 </script>
 
 <template>
@@ -108,7 +168,7 @@ function createHelloFromLesia() {
             </div>
           </div>
         </li>
-        <li class="ui-home-page-project">
+        <li class="ui-home-page-project" @click="createTelegramBot">
           <div class="ui-home-page-project-name">
             Телеграм-бот
           </div>
@@ -116,9 +176,9 @@ function createHelloFromLesia() {
             <div class="ui-home-page-project-badge">
               консольна програма
             </div>
-            <div class="ui-home-page-project-badge">
-              скоро
-            </div>
+          </div>
+          <div class="ui-home-page-project-delete-button create">
+            <span class="material-icons">add</span>
           </div>
         </li>
         <li class="ui-home-page-project">

@@ -31,7 +31,7 @@ watch(projects, () => {
   deep: true
 });
 
-function createProject(name) {
+function createProject(name, content) {
   const newProject = {
     id: (projects.value.sort((a, b) => b.id - a.id)?.[0]?.id || 0) + 1,
     name,
@@ -40,7 +40,7 @@ function createProject(name) {
     files: [
       {
         name: "старт.м",
-        content: `
+        content: content ? content : `
 дія привітати()
   друк("Привіт від Лесі!")
 кінець
