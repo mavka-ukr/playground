@@ -1,5 +1,6 @@
 import { computed, reactive, ref, watch } from "vue";
 import axios from "axios";
+import { RUN_MAVKA_URL } from "../globals.js";
 
 export const versionsState = reactive({
   isLoadingVersions: false,
@@ -10,7 +11,7 @@ export const versionsState = reactive({
   versionsState.isLoadingVersions = true;
 
   try {
-    const response = await axios.get(`https://запуск.мавка.укр/список.txt?t=${new Date().getTime()}`);
+    const response = await axios.get(`${RUN_MAVKA_URL}/список.txt?t=${new Date().getTime()}`);
     const versionsText = response.data;
 
     versionsState.versions = versionsText.split("\n").filter((v) => v && v !== "остання");

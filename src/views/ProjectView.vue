@@ -61,11 +61,9 @@ const { project } = toRefs(props);
 
 const showWindow = ref(false);
 const isRunning = ref(false);
-const isStopped = ref(false);
-const isEnded = ref(false);
+const keepCase = ref(false);
 const currentFile = ref(null);
 const newFileDialogOpen = ref(false);
-let runCount = 0;
 const { updateProject } = useProjects();
 const fullCode = ref("");
 const version = ref("остання");
@@ -97,14 +95,13 @@ const loading = ref("");
 
 async function run() {
   if (isRunning.value) {
-    isStopped.value = true;
+    keepCase.value = false;
     isRunning.value = false;
     loading.value = "";
   } else {
+    keepCase.value = false;
     rawHistory.value = "";
     isRunning.value = true;
-    isEnded.value = false;
-    isStopped.value = false;
     loading.value = "starting...";
 
     try {
@@ -112,11 +109,9 @@ async function run() {
     } catch (e) {
       alert(e.message);
       isRunning.value = false;
-      isEnded.value = true;
       loading.value = "";
       return;
     }
-    runCount++;
   }
 }
 
@@ -128,20 +123,25 @@ function onFrameEvent(event) {
     log(event.value.join(""));
   }
   if (event.type === "showcase") {
+    keepCase.value = true;
     showWindow.value = true;
   }
   if (event.type === "hidecase") {
+    keepCase.value = false;
     showWindow.value = false;
   }
+  if (event.type === "keepcase") {
+    keepCase.value = true;
+  }
   if (event.type === "failed") {
-    isEnded.value = false;
     isRunning.value = false;
     loading.value = "";
-    isStopped.value = true;
     log(event.value + "\n");
   }
   if (event.type === "ended") {
-    isEnded.value = false;
+    if (keepCase.value) {
+      return;
+    }
     isRunning.value = false;
     loading.value = "";
   }
@@ -207,14 +207,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <template v-if="fullCode && runCount && !isStopped">
+  <template v-if="fullCode && isRunning">
     <FrameWindow @close="showWindow = false"
                  @frame-event="onFrameEvent"
                  v-show="showWindow"
                  :code="fullCode"
                  :version="version"
-                 :files="project.files"
-                 :key="runCount + '.' + version" />
+                 :filename="currentFile.name"
+                 :files="project.files" />
   </template>
   <template v-if="newFileDialogOpen">
     <NewFileDialog @close="closeNewFileDialog" @save="createNewFile" />
@@ -277,7 +277,7 @@ onMounted(() => {
         <div class="ui-project-console-item">{{ line }}</div>
       </template>
 
-      <template v-if="loading">
+      <template v-if="loading && !history.length">
         <div class="ui-project-console-loading">
           <img class="logo-light" src="@/assets/images/logo-light.png" alt="">
           <img class="logo-dark" src="@/assets/images/logo-dark.png" alt="">

@@ -4,6 +4,7 @@ import NewProjectDialog from "@/components/dialogs/NewProjectDialog.vue";
 import { currentProjectId, useProjects } from "@/store/projects.js";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { RUN_MAVKA_URL } from "../globals.js";
 
 dayjs.extend(relativeTime);
 
@@ -13,7 +14,7 @@ const createDialogOpen = ref(false);
 const version = ref("а.б.в");
 
 onMounted(() => {
-  fetch(`https://запуск.мавка.укр/список.txt?t=${new Date().getTime()}`)
+  fetch(`${RUN_MAVKA_URL}/список.txt?t=${new Date().getTime()}`)
     .then((r) => r.text())
     .then((t) => t.split("\n")[1])
     .then((v) => version.value = v);

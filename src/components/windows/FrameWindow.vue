@@ -1,13 +1,13 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted } from "vue";
 import { Buffer } from "buffer";
-
-const showcaseUrl = `https://запуск.мавка.укр`;
+import { RUN_MAVKA_URL } from "../../globals.js";
 
 const emit = defineEmits(["frameEvent", "close"]);
 
 const props = defineProps({
   code: String,
+  filename: String,
   files: Array,
   version: String
 });
@@ -15,6 +15,9 @@ const props = defineProps({
 const encodedCode = computed(() => Buffer.from(props.code).toString("base64"));
 const encodedFiles = computed(() =>
   Buffer.from(JSON.stringify(props.files)).toString("base64")
+);
+const encodedFilename = computed(() =>
+  Buffer.from(props.filename).toString("base64")
 );
 
 function handleMessageEvent(event) {
@@ -50,7 +53,8 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="ui-window-body">
-      <iframe :src="`${showcaseUrl}/${version}/#code=${encodedCode}&files=${encodedFiles}`" />
+      <iframe
+        :src="`${RUN_MAVKA_URL}/${version}/index.html#code=${encodedCode}&files=${encodedFiles}&filename=${encodedFilename}`" />
     </div>
   </div>
 </template>
