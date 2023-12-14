@@ -47,6 +47,7 @@ function createTelegramBot() {
   const newProject = createProject("Телеграм-бот", `
 взяти "запит"
 взяти "json"
+взяти "читати"
 
 ТОКЕН = читати("ТОКЕН: ")
 УРЛ = "https://api.telegram.org/bot%(ТОКЕН)"
