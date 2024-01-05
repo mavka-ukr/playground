@@ -13,32 +13,14 @@ const types = wordRE([
   "список",
   "словник",
   "обʼєкт",
-  "щось",
-  "ніщо",
   "так",
   "ні",
   "пусто",
   "Дія",
-  "б8",
-  "б32",
-  "б64",
-  "б128",
-  "ц8",
-  "ц32",
-  "ц64",
-  "бц8",
-  "бц32",
-  "бц64",
-  "ц128",
-  "д8",
-  "д32",
-  "д64",
-  "н8",
-  "н32",
-  "н64",
-  "п8",
-  "п32",
-  "п64",
+  "байти",
+  "перебір",
+  "перебір_з_ключем",
+  "очікування"
 ]);
 const keywords = wordRE([
   "дія",
@@ -47,8 +29,10 @@ const keywords = wordRE([
   "якщо",
   "чекати",
   "взяти",
+  "пак",
   "дати",
   "як",
+  "це",
   "є",
   "вернути",
   "тривала",
@@ -74,7 +58,9 @@ const keywords = wordRE([
   "кінець",
   "не",
   "я",
-  "інякщо"
+  "спец",
+  "та",
+  "субʼєкт"
 ]);
 
 const indentTokens = wordRE([
@@ -143,12 +129,12 @@ function bracketed(level, style) {
 
     while ((ch = stream.next()) != null) {
       if (curlev == null) {
-        if (ch === "--;") {
+        if (ch === ";;;") {
           curlev = 0;
         }
       } else if (ch === "=") {
         ++curlev;
-      } else if (ch === "--;" && curlev === level) {
+      } else if (ch === ";;;" && curlev === level) {
         state.cur = normal;
         break;
       } else {
@@ -220,6 +206,6 @@ export const mavkaLang = {
 
   languageData: {
     indentOnInput: /^\s*(?:кінець|інакше|зловити|\)|\})$/,
-    commentTokens: { line: ";;", block: { open: ";--", close: "--;" } }
+    commentTokens: { line: ";;", block: { open: ";;;", close: ";;;" } }
   }
 };
