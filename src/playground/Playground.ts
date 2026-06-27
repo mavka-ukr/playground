@@ -73,13 +73,13 @@ export default class Playground {
     const file1 = project.createFile("початок.м");
     file1.content = `взяти модуль ракета [Ракета]
 
-реакція = Ракета(
+вікторія = Ракета(
   назва="Вікторія",
   швидкість=299792458,
   маса=недійсне,
 )
 
-реакція.запустити()
+вікторія.запустити()
 `;
 
     const file2 = project.createFile("ракета.м");
