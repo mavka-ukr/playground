@@ -18,7 +18,7 @@ jobs:
           persist-credentials: true
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: |
           mkdir -p olddist
           cp -a dist/.git dist/CNAME olddist
