@@ -62,6 +62,7 @@ const configureMonacoRegistry = () => {
       "не",
       "дійсне",
       "недійсне",
+      "я",
     ],
     typeKeywords: [
     ],
