@@ -15,10 +15,10 @@ onBeforeMount(() => {
 });
 
 function onCreateClick() {
-  const name = prompt("Введіть назву проєкту", "Новий проект")?.trim();
+  const name = prompt("Введіть назву проєкту", "Новий проєкт")?.trim();
 
   if (name) {
-    const project = P.createProject(name || "Новий проект");
+    const project = P.createProject(name || "Новий проєкт");
 
     router.push(`/проєкт/${project.id}`);
   }
