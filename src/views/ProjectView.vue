@@ -25,6 +25,8 @@ const project = shallowRef(new Project(P, route.params.id as string));
 const activeFile = shallowRef<ProjectFile>();
 const mavka = ref<any>();
 
+const isWarning = ref(localStorage.getItem("showWarning") !== "false");
+const neverAgainWarning = ref(false);
 const isLoadingRun = ref(false);
 const isRunning = ref(false);
 const consoleAfter = ref<string>();
@@ -83,6 +85,7 @@ async function onRunClick() {
     return;
   }
 
+  isWarning.value = false;
   isRunning.value = true;
   isLoadingRun.value = true;
   consoleAfter.value = "";
@@ -90,7 +93,7 @@ async function onRunClick() {
   if (mavka.value) {
     try {
       mavka.value.terminate();
-    } catch {}
+    } catch { }
   }
 
   try {
@@ -162,6 +165,14 @@ function onDeleteFileClick(file: ProjectFile) {
     }
   }
 }
+
+function dismissWarning() {
+  isWarning.value = false;
+
+  if (neverAgainWarning.value) {
+    localStorage.setItem("showWarning", "false");
+  }
+}
 </script>
 
 <template>
@@ -182,12 +193,7 @@ function onDeleteFileClick(file: ProjectFile) {
           <UiEditIcon />
         </button>
 
-        <button
-          v-if="false"
-          @click="onEditNameClick"
-          title="Завантажити як ZIP"
-          class="UiProjectHeaderNameButton"
-        >
+        <button v-if="false" @click="onEditNameClick" title="Завантажити як ZIP" class="UiProjectHeaderNameButton">
           <UiDownloadIcon />
         </button>
 
@@ -197,11 +203,7 @@ function onDeleteFileClick(file: ProjectFile) {
           </option>
         </select>
 
-        <select
-          v-if="project.files.length"
-          v-model="project.mainFile"
-          class="UiProjectHeaderMainFile"
-        >
+        <select v-if="project.files.length" v-model="project.mainFile" class="UiProjectHeaderMainFile">
           <option v-for="file in project.files" :key="file.path" :value="file">
             {{ file.name }}
           </option>
@@ -219,13 +221,8 @@ function onDeleteFileClick(file: ProjectFile) {
 
       <div class="UiProjectTabs">
         <div class="UiProjectTabsScroll">
-          <button
-            v-for="file in project.files"
-            @click="activeFile = file"
-            :key="file.path"
-            class="UiProjectTab"
-            :class="{ active: activeFile === file }"
-          >
+          <button v-for="file in project.files" @click="activeFile = file" :key="file.path" class="UiProjectTab"
+            :class="{ active: activeFile === file }">
             {{ file.name }}
 
             <div class="UiProjectTabActionsPlaceholder"></div>
@@ -255,6 +252,23 @@ function onDeleteFileClick(file: ProjectFile) {
 
       <div v-if="consoleAfter" class="UiProjectConsoleAfter">
         {{ consoleAfter }}
+      </div>
+
+      <div v-if="isWarning" class="UiProjectConsoleWarning">
+        <div class="UiProjectConsoleWarningText">
+          Функціонал Майданчика є обмежений по причині запуску через WASM.
+          Використовуйте Майданчик лише для знайомства з Мавкою.
+        </div>
+        <div class="UiProjectConsoleWarningButtons">
+          <label for="neverAgainWarning">
+            <input id="neverAgainWarning" type="checkbox" v-model="neverAgainWarning">
+            Більше не показувати
+          </label>
+
+          <button @click="dismissWarning" class="UiProjectConsoleWarningButton">
+            Добре!
+          </button>
+        </div>
       </div>
 
       <div v-if="isLoadingRun" class="UiProjectConsoleLoading">
@@ -545,7 +559,7 @@ function onDeleteFileClick(file: ProjectFile) {
     }
   }
 
-  &Tab + &Tab {
+  &Tab+&Tab {
     margin-left: 0.25rem;
   }
 
@@ -572,6 +586,63 @@ function onDeleteFileClick(file: ProjectFile) {
       color: var(--muted);
     }
 
+    &Warning {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg);
+      cursor: default;
+
+      svg {
+        font-size: 3rem;
+        animation: spin 750ms ease-in-out infinite;
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      }
+
+      &Text {
+        background-color: yellow;
+        color: black;
+      }
+
+      &Buttons {
+        margin-top: 1rem;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        label {
+          font-size: 0.8rem;
+        }
+      }
+
+      &Button {
+        margin-top: 1rem;
+
+        background-color: var(--text);
+        border: none;
+        color: var(--bg);
+        cursor: pointer;
+      }
+    }
+
     &Loading {
       position: absolute;
       top: 0;
@@ -592,6 +663,7 @@ function onDeleteFileClick(file: ProjectFile) {
           0% {
             transform: rotate(0deg);
           }
+
           100% {
             transform: rotate(360deg);
           }
