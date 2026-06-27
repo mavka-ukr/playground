@@ -576,6 +576,7 @@ function dismissWarning() {
   }
 
   &Console {
+    overflow: auto;
     position: relative;
     width: 400px;
     min-height: 100%;
