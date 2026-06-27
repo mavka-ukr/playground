@@ -93,6 +93,7 @@ async function onRunClick() {
   if (mavka.value) {
     try {
       mavka.value.terminate();
+      mavka.value = null;
     } catch { }
   }
 
