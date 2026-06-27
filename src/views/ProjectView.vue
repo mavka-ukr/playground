@@ -263,8 +263,8 @@ function dismissWarning() {
 
       <div v-if="isWarning" class="UiProjectConsoleWarning">
         <div class="UiProjectConsoleWarningText">
-          Функціонал Мавки в Майданчику є обмежений по причині запуску через Wasm.
-          Використовуйте Майданчик лише для знайомства з Мавкою.
+          Можливості Бібліотеки Мавки в Майданчику є обмежені по причині запуску через Wasm.
+          Використовуйте Майданчик лише для знайомства з мовою.
         </div>
         <div class="UiProjectConsoleWarningButtons">
           <label for="neverAgainWarning">
