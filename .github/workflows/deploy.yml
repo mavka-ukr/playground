@@ -23,6 +23,7 @@ jobs:
           npm ci
           npm run build-only
           cp -a dist/* olddist
+          cp -a dist/index.html olddist/404.html
           cd olddist
           git config --local user.name "КДБ"
           git config --local user.email "prykhozhdenko@gmail.com"
