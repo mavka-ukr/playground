@@ -128,6 +128,8 @@ function onStopClick() {
   }
 
   isRunning.value = false;
+
+  consoleAfter.value = "Виконання зупинено";
 }
 
 function onNewFileClick() {
