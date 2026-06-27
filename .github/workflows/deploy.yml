@@ -13,19 +13,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: "diysnist-static/mavka-playground-website"
-          path: "dist"
+          path: "olddist"
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY }}
           persist-credentials: true
       - uses: actions/setup-node@v4
         with:
           node-version: 24
       - run: |
-          mkdir -p olddist
-          cp -a dist/.git dist/CNAME olddist
           npm ci
           npm run build-only
-          cp -a olddist/.git CNAME dist
-          cd dist
+          cp -a dist/* olddist
+          cd olddist
           git config --local user.name "КДБ"
           git config --local user.email "prykhozhdenko@gmail.com"
           git add .
@@ -33,7 +31,7 @@ jobs:
       - uses: ad-m/github-push-action@master
         with:
           branch: main
-          directory: "dist"
+          directory: "olddist"
           repository: "diysnist-static/mavka-playground-website"
           ssh: true
           github_token: ${{ secrets.SSH_DEPLOY_KEY }}
