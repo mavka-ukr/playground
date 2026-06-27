@@ -122,9 +122,7 @@ async function onRunClick() {
 
 function onStopClick() {
   if (mavka.value) {
-    try {
-      mavka.value.terminate();
-    } catch { }
+    mavka.value.terminate();
   }
 
   isRunning.value = false;
