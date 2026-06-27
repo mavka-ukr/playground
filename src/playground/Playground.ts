@@ -72,6 +72,7 @@ export default class Playground {
 
     const file1 = project.createFile("початок.м");
     file1.content = `взяти модуль ракета
+
 друк("Вітання з Мавки!")
 `;
 
