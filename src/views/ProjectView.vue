@@ -464,7 +464,7 @@ function onDeleteFileClick(file: ProjectFile) {
     background-color: transparent;
     border: none;
     border-radius: 1rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text);
     cursor: pointer;
     flex-shrink: 0;

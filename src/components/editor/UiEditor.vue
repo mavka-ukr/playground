@@ -205,7 +205,6 @@ onMounted(() => {
     fontFamily: "'Fira Code', monospace",
     fontSize: 14,
     lineHeight: 22,
-    fontWeight: "500",
     minimap: { enabled: false },
     roundedSelection: true,
     scrollBeyondLastLine: false,
