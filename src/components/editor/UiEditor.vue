@@ -6,7 +6,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 interface Props {
   modelValue: string;
-  language?: "mavka" | "tsil" | string;
+  language?: "mavka" | string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,12 +36,11 @@ const configureMonacoRegistry = () => {
   }
 
   monaco.languages.register({ id: "mavka" });
-  monaco.languages.register({ id: "tsil" });
 
   monaco.languages.setMonarchTokensProvider("mavka", {
     keywords: [
       "дія",
-      "структура",
+      "клас",
       "перебрати",
       "якщо",
       "чекати",
@@ -59,31 +58,16 @@ const configureMonacoRegistry = () => {
       "впасти",
       "поки",
       "модуль",
-      "рівно",
-      "більше",
-      "менше",
-      "містить",
-      "макет",
-      "втілює",
-      "js",
       "кінець",
       "не",
+      "дійсне",
+      "недійсне",
     ],
     typeKeywords: [
-      "текст",
-      "логічне",
-      "число",
-      "список",
-      "словник",
-      "обʼєкт",
-      "щось",
-      "ніщо",
-      "так",
-      "ні",
-      "пусто",
     ],
     tokenizer: {
       root: [
+        ["взяти модуль", "keyword"],
         ["взяти пак", "keyword"],
         ["взяти файл", "keyword"],
         [
@@ -105,10 +89,10 @@ const configureMonacoRegistry = () => {
         [/"/, { token: "string.quote", bracket: "@open", next: "@string" }],
       ],
       comment: [
-        [/[^;\--]+/, "comment"],
-        [";--", "comment", "@push"],
-        ["--;", "comment", "@pop"],
-        [/[;\--]/, "comment"],
+        [/[^;\*]+/, "comment"],
+        [";\\*", "comment", "@push"],
+        ["\\*;", "comment", "@pop"],
+        [/[;\*]/, "comment"],
       ],
       string: [
         [/[^\\"]+/, "string"],
@@ -117,74 +101,8 @@ const configureMonacoRegistry = () => {
       ],
       whitespace: [
         [/[ \t\r\n]+/, "white"],
-        [/;--/, "comment", "@comment"],
+        [/;\*/, "comment", "@comment"],
         [/;;.*$/, "comment"],
-      ],
-    },
-  });
-
-  monaco.languages.setMonarchTokensProvider("tsil", {
-    keywords: [
-      "дія",
-      "структура",
-      "перебрати",
-      "якщо",
-      "взяти",
-      "як",
-      "вернути",
-      "і",
-      "або",
-      "інакше",
-      "поки",
-      "зовнішня",
-      "місцева",
-      "внутрішня",
-    ],
-    typeKeywords: [
-      "ц8",
-      "ц32",
-      "ц64",
-      "ціле",
-      "п8",
-      "п32",
-      "п64",
-      "позитивне",
-      "д8",
-      "д32",
-      "д64",
-      "дійсне",
-    ],
-    tokenizer: {
-      root: [
-        ["взяти визначення", "keyword"],
-        [
-          /[a-zA-Zа-яА-ЯіІїЇєЄґҐ][\wa-zA-Zа-яА-ЯіІїЇєЄґҐ$]*/u,
-          {
-            cases: {
-              "@keywords": "keyword",
-              "@typeKeywords": "keyword",
-              "@default": "identifier",
-            },
-          },
-        ],
-        { include: "@whitespace" },
-        [/[,.]/, "delimiter"],
-        [/\d*\.\d+([eE][-+]?\d+)?/, "number.float"],
-        [/0[xX][0-9a-fA-F]+/, "number.hex"],
-        [/\d+/, "number"],
-        [/"([^"\\]|\\.)*$/, "string.invalid"],
-        [/"/, { token: "string.quote", bracket: "@open", next: "@string" }],
-      ],
-      comment: [],
-      string: [
-        [/[^\\"]+/, "string"],
-        [/\\./, "string.escape.invalid"],
-        [/"/, { token: "string.quote", bracket: "@close", next: "@pop" }],
-      ],
-      whitespace: [
-        [/[ \t\r\n]+/, "white"],
-        [/\/\*/, "comment", "@comment"],
-        [/\/\/.*$/, "comment"],
       ],
     },
   });
@@ -233,7 +151,7 @@ watch(
   (newLang) => {
     if (!editorInstance) return;
     const model = editorInstance.getModel();
-    if (model && ["mavka", "tsil"].includes(newLang)) {
+    if (model && ["mavka"].includes(newLang)) {
       monaco.editor.setModelLanguage(model, newLang);
     }
   },

@@ -602,7 +602,7 @@ function dismissWarning() {
 
       svg {
         font-size: 3rem;
-        animation: spin 750ms ease-in-out infinite;
+        animation: spin 500ms ease-in-out infinite;
 
         @keyframes spin {
           0% {

@@ -23,8 +23,10 @@ export default class Project {
       files: (project.files || []).map((file: string) => new ProjectFile(this, file)),
       lastModified: project.lastModified || Date.now(),
       mavkaVersion: project.mavkaVersion || playground.mavkaVersions[0]?.mavka || "0.125.7",
-      mainFile: project.mainFile ? new ProjectFile(this, project.mainFile) : undefined,
+      mainFile: undefined,
     });
+
+    this.data.mainFile = this.data.files.find((file) => file.path === project.mainFile);
   }
 
   public get name(): string {
