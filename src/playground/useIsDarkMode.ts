@@ -1,6 +1,6 @@
 import { computed, ref, watch } from "vue";
 
-const isAuto = ref(false);
+const isAuto = ref(true);
 const isDarkMode = ref(false);
 
 watch(

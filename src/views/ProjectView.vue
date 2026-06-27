@@ -564,6 +564,7 @@ function onDeleteFileClick(file: ProjectFile) {
     padding: 10px;
     border-left: 1px solid var(--border);
     cursor: text;
+    font-family: "Fira Code", monospace;
 
     &After {
       margin-top: 0.5rem;
@@ -603,8 +604,10 @@ function onDeleteFileClick(file: ProjectFile) {
       align-items: center;
       width: 100%;
       white-space: pre-wrap;
+      font-family: "Fira Code", monospace;
 
       span {
+        font-family: inherit;
         white-space: pre-wrap;
       }
 
