@@ -70,9 +70,28 @@ export default class Playground {
     const project = new Project(this, id);
     project.name = name;
 
-    const file = project.createFile("початок.м");
+    const file1 = project.createFile("початок.м");
+    file1.content = `взяти модуль ракета
+друк("Вітання з Мавки!")
+`;
 
-    file.content = 'друк("Вітання з Мавки!")';
+    const file2 = project.createFile("ракета.м");
+    file2.content = `клас Ракета
+  назва
+  швидкість
+  маса
+кінець
+
+дія Ракета.запустити()
+  друк("Ракету %(я.назва) запущено!")
+кінець
+
+реакція = Ракета(назва="Вікторія",
+                 швидкість=299792458,
+                 маса=недійсне)
+
+реакція.запустити()
+`;
 
     this.data.projects = [project, ...this.data.projects];
 
