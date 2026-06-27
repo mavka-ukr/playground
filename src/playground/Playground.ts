@@ -73,7 +73,11 @@ export default class Playground {
     const file1 = project.createFile("початок.м");
     file1.content = `взяти модуль ракета
 
-друк("Вітання з Мавки!")
+реакція = Ракета(назва="Вікторія",
+                 швидкість=299792458,
+                 маса=недійсне)
+
+реакція.запустити()
 `;
 
     const file2 = project.createFile("ракета.м");
@@ -87,11 +91,7 @@ export default class Playground {
   друк("Ракету %(я.назва) запущено!")
 кінець
 
-реакція = Ракета(назва="Вікторія",
-                 швидкість=299792458,
-                 маса=недійсне)
-
-реакція.запустити()
+дати Ракета
 `;
 
     this.data.projects = [project, ...this.data.projects];
