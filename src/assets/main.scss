@@ -1,0 +1,73 @@
+:root {
+  --home-bg: #f5f5f5;
+  --bg: #ffffff;
+  --text: #333333;
+  --muted: #888888;
+  --hover: #e0e0e0;
+  --press: #d0d0d0;
+  --card: #ffffff;
+  --border: #e0e0e0;
+  --shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+  --red: red;
+  --green: green;
+  --blue: #375bb6;
+}
+
+html.dark {
+  --home-bg: #1e1e1e;
+  --bg: #1e1e1e;
+  --text: #f5f5f5;
+  --muted: #aaaaaa;
+  --hover: #2a2a2a;
+  --press: #3a3a3a;
+  --card: #2a2a2a;
+  --border: #3a3a3a;
+  --shadow: rgba(0, 0, 0, 0.5) 0px 1px 2px 0px;
+  --red: #ff0000;
+  --green: #00ff00;
+  --blue: #375bb6;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Rubik, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5c6370;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #abb2bf;
+}
