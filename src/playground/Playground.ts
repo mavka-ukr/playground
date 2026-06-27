@@ -71,7 +71,7 @@ export default class Playground {
     project.name = name;
 
     const file1 = project.createFile("початок.м");
-    file1.content = `взяти модуль ракета
+    file1.content = `взяти модуль ракета [Ракета]
 
 реакція = Ракета(назва="Вікторія",
                  швидкість=299792458,
