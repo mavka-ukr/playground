@@ -145,11 +145,12 @@ export default class Project {
       throw new Error(`File "${oldName}" not found in project "${this.id}"`);
     }
 
-    const newFile = new ProjectFile(this, `${this.id}/${newName}`);
-
-    newFile.content = oldFile.content;
+    const oldContent = oldFile.content;
 
     localStorage.removeItem(oldFile.path);
+
+    const newFile = new ProjectFile(this, `${this.id}/${newName}`);
+    newFile.content = oldContent;
 
     this.data.files = this.data.files.map((file) => (file === oldFile ? newFile : file));
 
