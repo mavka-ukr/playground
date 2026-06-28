@@ -51,6 +51,8 @@ export default class Playground {
 
     this.data.mavkaVersions = (await Mavka.fetchAvailableVersions()).reverse();
 
+    localStorage.setItem("mavkaVersions", JSON.stringify(this.data.mavkaVersions));
+
     this.data.isInited = true;
   }
 
