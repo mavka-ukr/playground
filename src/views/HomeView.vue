@@ -83,8 +83,12 @@ function onDeleteProjectClick(project: Project) {
     </div>
 
     <footer>
-      <a href="https://мавка.укр">мавка.укр</a>
-      <span>·</span>
+      <div class="UiFooterTopLinks">
+        <a href="https://мавка.укр">мавка.укр</a>
+
+        <a href="https://веб.мавка.укр">веб.мавка.укр</a>
+      </div>
+
       <a target="_blank" href="https://github.com/mavka-ukr/playground"
         >github.com/mavka-ukr/playground</a
       >
@@ -211,9 +215,14 @@ function onDeleteProjectClick(project: Project) {
 
   footer {
     margin-top: 100px;
-    display: flex;
-    align-items: center;
-    justify-self: center;
+
+    .UiFooterTopLinks {
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-self: center;
+      gap: 0.75rem;
+    }
 
     span {
       margin-left: 0.5rem;
