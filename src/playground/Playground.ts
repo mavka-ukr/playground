@@ -49,7 +49,7 @@ export default class Playground {
       return;
     }
 
-    this.data.mavkaVersions = await Mavka.fetchAvailableVersions();
+    this.data.mavkaVersions = (await Mavka.fetchAvailableVersions()).reverse();
 
     this.data.isInited = true;
   }
