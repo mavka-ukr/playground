@@ -6,6 +6,7 @@ import UiDownloadIcon from "@/components/icons/UiDownloadIcon.vue";
 import UiEditIcon from "@/components/icons/UiEditIcon.vue";
 import UiMavkaIcon from "@/components/icons/UiMavkaIcon.vue";
 import UiPlayIcon from "@/components/icons/UiPlayIcon.vue";
+import UiSettingsIcon from "@/components/icons/UiSettingsIcon.vue";
 import UiStopIcon from "@/components/icons/UiStopIcon.vue";
 import { getPlayground } from "@/playground/getPlayground";
 import makeMavka from "@/playground/makeMavka";
@@ -30,6 +31,9 @@ const neverAgainWarning = ref(false);
 const isLoadingRun = ref(false);
 const isRunning = ref(false);
 const consoleAfter = ref<string>();
+
+const activeTab = ref<"editor" | "console">("editor");
+const isSettingsOpen = ref(false);
 
 watch(
   () => project.value.name,
@@ -63,6 +67,10 @@ function onEditNameClick() {
 }
 
 async function onRunClick() {
+  if (window.innerWidth <= 768) {
+    activeTab.value = "console";
+  }
+
   if (!terminalEl.value) {
     return;
   }
@@ -94,7 +102,7 @@ async function onRunClick() {
     try {
       mavka.value.terminate();
       mavka.value = null;
-    } catch { }
+    } catch {}
   }
 
   try {
@@ -183,7 +191,7 @@ function dismissWarning() {
 </script>
 
 <template>
-  <div class="UiProject">
+  <div class="UiProject" :class="{ [`view-${activeTab}`]: true }">
     <div class="UiProjectMain">
       <div class="UiProjectHeader">
         <button @click="onBackClick" class="UiProjectHeaderBack">
@@ -200,36 +208,60 @@ function dismissWarning() {
           <UiEditIcon />
         </button>
 
-        <button v-if="false" @click="onEditNameClick" title="Завантажити як ZIP" class="UiProjectHeaderNameButton">
+        <button
+          v-if="false"
+          @click="onEditNameClick"
+          title="Завантажити як ZIP"
+          class="UiProjectHeaderNameButton"
+        >
           <UiDownloadIcon />
         </button>
 
-        <select v-model="project.mavkaVersion" class="UiProjectHeaderVersion">
-          <option v-for="version in P.mavkaVersions" :key="version.mavka" :value="version.mavka">
-            Мавка {{ version.mavka }}
-          </option>
-        </select>
+        <div class="UiProjectHeaderSelectors">
+          <select v-model="project.mavkaVersion" class="UiProjectHeaderVersion">
+            <option v-for="version in P.mavkaVersions" :key="version.mavka" :value="version.mavka">
+              Мавка {{ version.mavka }}
+            </option>
+          </select>
 
-        <select v-if="project.files.length" v-model="project.mainFile" class="UiProjectHeaderMainFile">
-          <option v-for="file in project.files" :key="file.path" :value="file">
-            {{ file.name }}
-          </option>
-        </select>
+          <select
+            v-if="project.files.length"
+            v-model="project.mainFile"
+            class="UiProjectHeaderMainFile"
+          >
+            <option v-for="file in project.files" :key="file.path" :value="file">
+              {{ file.name }}
+            </option>
+          </select>
+        </div>
+
+        <button
+          @click="isSettingsOpen = true"
+          class="UiProjectHeaderSettingsToggle"
+          title="Налаштування проєкту"
+        >
+          <UiSettingsIcon />
+        </button>
 
         <button v-if="!isRunning" @click="onRunClick" class="UiProjectHeaderRun">
           <UiPlayIcon />
-          Запустити
+          <span>Запустити</span>
         </button>
         <button v-else @click="onStopClick" class="UiProjectHeaderRun stop">
           <UiStopIcon />
-          Зупинити
+          <span>Зупинити</span>
         </button>
       </div>
 
       <div class="UiProjectTabs">
         <div class="UiProjectTabsScroll">
-          <button v-for="file in project.files" @click="activeFile = file" :key="file.path" class="UiProjectTab"
-            :class="{ active: activeFile === file }">
+          <button
+            v-for="file in project.files"
+            @click="activeFile = file"
+            :key="file.path"
+            class="UiProjectTab"
+            :class="{ active: activeFile === file }"
+          >
             {{ file.name }}
 
             <div class="UiProjectTabActionsPlaceholder"></div>
@@ -263,18 +295,16 @@ function dismissWarning() {
 
       <div v-if="isWarning" class="UiProjectConsoleWarning">
         <div class="UiProjectConsoleWarningText">
-          Можливості Бібліотеки Мавки в Майданчику є обмежені по причині запуску через Wasm.
-          Використовуйте Майданчик для знайомства з мовою.
+          Можливості Бібліотеки Мавки в Майданчику є обмежені по причині запуску у Web browser
+          (через Wasm). Використовуйте Майданчик для знайомства з мовою.
         </div>
         <div class="UiProjectConsoleWarningButtons">
           <label for="neverAgainWarning">
-            <input id="neverAgainWarning" type="checkbox" v-model="neverAgainWarning">
+            <input id="neverAgainWarning" type="checkbox" v-model="neverAgainWarning" />
             Більше не показувати
           </label>
 
-          <button @click="dismissWarning" class="UiProjectConsoleWarningButton">
-            Добре!
-          </button>
+          <button @click="dismissWarning" class="UiProjectConsoleWarningButton">Добре!</button>
         </div>
       </div>
 
@@ -282,12 +312,62 @@ function dismissWarning() {
         <UiMavkaIcon />
       </div>
     </div>
+
+    <div v-if="isSettingsOpen" class="UiProjectModalOverlay" @click.self="isSettingsOpen = false">
+      <div class="UiProjectModal">
+        <div class="UiProjectModalHeader">
+          <h3>Налаштування проєкту</h3>
+          <button @click="isSettingsOpen = false" class="UiProjectModalClose">&times;</button>
+        </div>
+        <div class="UiProjectModalContent">
+          <div class="UiProjectModalField">
+            <label>Версія Мавки</label>
+            <select v-model="project.mavkaVersion">
+              <option
+                v-for="version in P.mavkaVersions"
+                :key="version.mavka"
+                :value="version.mavka"
+              >
+                Мавка {{ version.mavka }}
+              </option>
+            </select>
+          </div>
+          <div v-if="project.files.length" class="UiProjectModalField">
+            <label>Головний файл</label>
+            <select v-model="project.mainFile">
+              <option v-for="file in project.files" :key="file.path" :value="file">
+                {{ file.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="UiProjectMobileNav">
+      <button
+        @click="activeTab = 'editor'"
+        class="UiProjectMobileNavButton"
+        :class="{ active: activeTab === 'editor' }"
+      >
+        Редактор
+      </button>
+      <button
+        @click="activeTab = 'console'"
+        class="UiProjectMobileNavButton"
+        :class="{ active: activeTab === 'console' }"
+      >
+        Консоль
+        <span v-if="isRunning" class="UiProjectMobileNavBadge"></span>
+      </button>
+    </div>
   </div>
 </template>
 
 <style lang="scss">
 .UiProject {
   --header-height: 3rem;
+  --nav-height: 0px;
 
   min-height: 100%;
   max-height: 100%;
@@ -375,8 +455,18 @@ function dismissWarning() {
     }
   }
 
-  &HeaderVersion {
+  &HeaderSelectors {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  &HeaderSettingsToggle {
+    display: none;
+  }
+
+  &HeaderVersion {
     height: var(--header-height);
     padding: 0 0.5rem;
     display: flex;
@@ -566,7 +656,7 @@ function dismissWarning() {
     }
   }
 
-  &Tab+&Tab {
+  &Tab + &Tab {
     margin-left: 0.25rem;
   }
 
@@ -721,6 +811,223 @@ function dismissWarning() {
 
     .term-color-default {
       color: inherit;
+    }
+  }
+
+  &ModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  &Modal {
+    width: 100%;
+    background-color: var(--bg);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideUp 200ms ease-out;
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    &Header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+    }
+
+    &Close {
+      background: transparent;
+      border: none;
+      font-size: 1.75rem;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+
+    &Field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.25rem;
+
+      label {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      select {
+        height: 3rem;
+        padding: 0 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        background-color: transparent;
+        color: var(--text);
+        font-size: 1rem;
+        outline: none;
+        width: 100%;
+      }
+    }
+  }
+
+  &MobileNav {
+    display: none;
+  }
+}
+
+@media (max-width: 1140px) {
+  .UiProject {
+    &Header {
+      padding-right: 0.25rem;
+    }
+
+    &HeaderName {
+      max-width: 100%;
+    }
+
+    &HeaderSelectors {
+      display: none;
+    }
+
+    &HeaderSettingsToggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--header-height);
+      height: var(--header-height);
+      background-color: transparent;
+      border: none;
+      border-left: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      margin-left: auto;
+      font-size: 1rem;
+
+      &:active {
+        background-color: var(--press);
+      }
+    }
+
+    &HeaderRun {
+      border-left: 1px solid var(--border);
+    }
+
+    &HeaderRun span {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 1023px) {
+  .UiProject {
+    --nav-height: 3.5rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr var(--nav-height);
+
+    &Main,
+    &Console {
+      grid-row: 1;
+      grid-column: 1;
+      width: 100%;
+      max-height: calc(100vh - var(--nav-height));
+      height: calc(100vh - var(--nav-height));
+    }
+
+    &Console {
+      border-left: none;
+    }
+
+    &.view-editor {
+      .UiProjectMain {
+        display: flex;
+      }
+
+      .UiProjectConsole {
+        display: none;
+      }
+    }
+
+    &.view-console {
+      .UiProjectMain {
+        display: none;
+      }
+
+      .UiProjectConsole {
+        display: block;
+      }
+    }
+
+    &MobileNav {
+      grid-row: 2;
+      grid-column: 1;
+      display: flex;
+      border-top: 1px solid var(--border);
+      background-color: var(--bg);
+      z-index: 10;
+
+      &Button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        border: none;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        position: relative;
+
+        &.active {
+          color: var(--blue);
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--blue);
+          }
+        }
+      }
+
+      &Badge {
+        position: absolute;
+        top: 1rem;
+        right: 2rem;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--green);
+      }
     }
   }
 }

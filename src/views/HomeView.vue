@@ -56,7 +56,12 @@ function onDeleteProjectClick(project: Project) {
         </div>
       </button>
 
-      <RouterLink v-for="project in P.projects" :key="project.id" :to="`/проєкт/${project.id}`" class="UiHomeProject">
+      <RouterLink
+        v-for="project in P.projects"
+        :key="project.id"
+        :to="`/проєкт/${project.id}`"
+        class="UiHomeProject"
+      >
         <div class="UiHomeProjectMain">
           <div class="UiHomeProjectName">{{ project.name }}</div>
           <div class="UiHomeProjectSubname">Змінено {{ project.lastModifiedPretty }} тому</div>
@@ -67,7 +72,10 @@ function onDeleteProjectClick(project: Project) {
             <UiEditIcon />
           </button>
 
-          <button @click.prevent.stop="onDeleteProjectClick(project)" class="UiHomeProjectAction red">
+          <button
+            @click.prevent.stop="onDeleteProjectClick(project)"
+            class="UiHomeProjectAction red"
+          >
             <UiDeleteIcon />
           </button>
         </div>
@@ -77,7 +85,9 @@ function onDeleteProjectClick(project: Project) {
     <footer>
       <a href="https://мавка.укр">мавка.укр</a>
       <span>·</span>
-      <a target="_blank" href="https://github.com/mavka-ukr/playground">github.com/mavka-ukr/playground</a>
+      <a target="_blank" href="https://github.com/mavka-ukr/playground"
+        >github.com/mavka-ukr/playground</a
+      >
     </footer>
   </div>
 </template>
@@ -195,7 +205,7 @@ function onDeleteProjectClick(project: Project) {
     }
   }
 
-  .UiHomeProject+.UiHomeProject {
+  .UiHomeProject + .UiHomeProject {
     border-top: 1px solid var(--border);
   }
 

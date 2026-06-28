@@ -64,8 +64,7 @@ const configureMonacoRegistry = () => {
       "недійсне",
       "я",
     ],
-    typeKeywords: [
-    ],
+    typeKeywords: [],
     tokenizer: {
       root: [
         ["взяти модуль", "keyword"],
