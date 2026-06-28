@@ -8,6 +8,7 @@ export type TPlaygroundMavkaVersion = {
 
 export default class Playground {
   protected readonly data: {
+    isInited: boolean;
     projects: Project[];
     mavkaVersions: TPlaygroundMavkaVersion[];
   };
@@ -17,9 +18,14 @@ export default class Playground {
     const mavkaVersions = JSON.parse(localStorage.getItem("mavkaVersions") || "[]");
 
     this.data = shallowReactive({
+      isInited: false,
       projects: projects.map((id: string) => new Project(this, id)),
       mavkaVersions: mavkaVersions,
     });
+  }
+
+  public get isInited() {
+    return this.data.isInited;
   }
 
   public get projects(): Project[] {
@@ -39,7 +45,13 @@ export default class Playground {
   }
 
   public async init(): Promise<void> {
+    if (this.data.isInited) {
+      return;
+    }
+
     this.data.mavkaVersions = await Mavka.fetchAvailableVersions();
+
+    this.data.isInited = true;
   }
 
   public getNewProjectId(name: string): string {

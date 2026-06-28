@@ -6,12 +6,14 @@ import { getPlayground } from "./playground/getPlayground";
 const P = getPlayground();
 
 onBeforeMount(() => {
-  P.init();
+  P.init().then(() => {
+    document.querySelector(".UiAppLoading")?.remove();
+  });
 });
 </script>
 
 <template>
-  <RouterView />
+  <RouterView v-if="P.isInited" />
 </template>
 
 <style lang="scss"></style>
