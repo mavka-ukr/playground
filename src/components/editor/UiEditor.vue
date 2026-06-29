@@ -89,7 +89,12 @@ const configureMonacoRegistry = () => {
         ],
         { include: "@whitespace" },
         [/[,.]/, "delimiter"],
-        [/\d*\.\d+([eE][-+]?\d+)?/, "number.float"],
+
+        [/\d*\.\d+([еЕ][-+]?\d+)?/, "number.float"],
+
+        [/\d+[еЕ][-+]?\d+/, "number.float"],
+        // ------------------------------------
+
         [/0[xX][0-9a-fA-F]+/, "number.hex"],
         [/\d+/, "number"],
         [/"([^"\\]|\\.)*$/, "string.invalid"],
