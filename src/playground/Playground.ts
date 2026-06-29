@@ -57,7 +57,29 @@ export default class Playground {
 
       script.onload = async () => {
         try {
-          this.data.mavkaVersions = (await Mavka.fetchAvailableVersions()).reverse();
+          const rawVersions: { pkg: string; mavka: string }[] = await Mavka.fetchAvailableVersions();
+
+          const semverCompare = (a: string, b: string) => {
+            const pa = a.split('.').map(Number);
+            const pb = b.split('.').map(Number);
+            for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+              const na = pa[i] || 0;
+              const nb = pb[i] || 0;
+              if (na !== nb) return na - nb;
+            }
+            return 0;
+          };
+
+          const seen = new Set();
+          this.data.mavkaVersions = rawVersions
+            .sort((a, b) => semverCompare(b.mavka, a.mavka))
+            .filter((item) => {
+              const version = item.mavka.trim();
+              if (seen.has(version)) return false;
+              seen.add(version);
+              return true;
+            })
+            .reverse();
 
           localStorage.setItem("mavkaVersions", JSON.stringify(this.data.mavkaVersions));
 
