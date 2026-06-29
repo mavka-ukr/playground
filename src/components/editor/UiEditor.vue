@@ -132,6 +132,9 @@ onMounted(() => {
     roundedSelection: true,
     scrollBeyondLastLine: false,
     padding: { top: 12, bottom: 12 },
+    unicodeHighlight: {
+      ambiguousCharacters: false,
+    },
   });
 
   editorInstance.onDidChangeModelContent(() => {
