@@ -78,8 +78,7 @@ export default class Playground {
               if (seen.has(version)) return false;
               seen.add(version);
               return true;
-            })
-            .reverse();
+            });
 
           localStorage.setItem("mavkaVersions", JSON.stringify(this.data.mavkaVersions));
 
