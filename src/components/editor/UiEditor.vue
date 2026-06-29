@@ -68,6 +68,8 @@ const configureMonacoRegistry = () => {
       "я",
       "власна",
       "взаємо",
+      "нескінченність",
+      "невизначеність",
     ],
     typeKeywords: [],
     tokenizer: {
