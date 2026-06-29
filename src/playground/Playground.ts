@@ -45,15 +45,36 @@ export default class Playground {
   }
 
   public async init(): Promise<void> {
-    if (this.data.isInited) {
-      return;
-    }
+    return new Promise((res, rej) => {
+      if (this.data.isInited) {
+        res();
+        return;
+      }
 
-    this.data.mavkaVersions = (await Mavka.fetchAvailableVersions()).reverse();
+      const script = document.createElement("script");
+      script.src = "https://веб.мавка.укр/mavka_web.js?d=" + Date.now();
+      script.async = true;
 
-    localStorage.setItem("mavkaVersions", JSON.stringify(this.data.mavkaVersions));
+      script.onload = async () => {
+        try {
+          this.data.mavkaVersions = (await Mavka.fetchAvailableVersions()).reverse();
 
-    this.data.isInited = true;
+          localStorage.setItem("mavkaVersions", JSON.stringify(this.data.mavkaVersions));
+
+          this.data.isInited = true;
+
+          res();
+        } catch (e) {
+          rej(e);
+        }
+      };
+
+      script.onerror = (e) => {
+        rej(e);
+      };
+
+      document.head.appendChild(script);
+    });
   }
 
   public getNewProjectId(name: string): string {
