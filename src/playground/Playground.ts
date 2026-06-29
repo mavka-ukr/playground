@@ -72,7 +72,7 @@ export default class Playground {
 
           const seen = new Set();
           this.data.mavkaVersions = rawVersions
-            .sort((a, b) => semverCompare(b.mavka, a.mavka))
+            .sort((a, b) => semverCompare(b.pkg, a.pkg))
             .filter((item) => {
               const version = item.mavka.trim();
               if (seen.has(version)) return false;

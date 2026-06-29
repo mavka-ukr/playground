@@ -140,6 +140,81 @@ onMounted(() => {
     renderLineHighlight: "all",
   });
 
+  editorInstance.addAction({
+    id: "save-code",
+    label: "Save Code",
+    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+    run: function (ed) {
+      const currentCode = ed.getValue();
+
+      emit("save", currentCode);
+    },
+  });
+
+  editorInstance.addAction({
+    id: "editor.action.duplicateSelection",
+    label: "Duplicate Selection",
+    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD],
+    run: function (ed) {
+      const selection = ed.getSelection();
+      if (!selection) return;
+
+      const model = ed.getModel();
+      if (!model) return;
+
+      ed.pushUndoStop();
+
+      if (!selection.isEmpty()) {
+        const selectedText = model.getValueInRange(selection);
+        const insertRange = new monaco.Range(
+          selection.endLineNumber,
+          selection.endColumn,
+          selection.endLineNumber,
+          selection.endColumn,
+        );
+
+        ed.executeEdits("duplicate-inline", [
+          {
+            range: insertRange,
+            text: selectedText,
+            forceMoveMarkers: false,
+          },
+        ]);
+
+        const lineDiff = selection.endLineNumber - selection.startLineNumber;
+        const startLine = selection.endLineNumber;
+        const startColumn = selection.endColumn;
+        const endLine = startLine + lineDiff;
+
+        let endColumn = selection.endColumn;
+        if (selection.startLineNumber === selection.endLineNumber) {
+          endColumn = selection.endColumn + selectedText.length;
+        }
+
+        ed.setSelection(new monaco.Selection(startLine, startColumn, endLine, endColumn));
+      } else {
+        const line = selection.startLineNumber;
+        const maxCol = model.getLineMaxColumn(line);
+        const lineContent = model.getLineContent(line);
+
+        ed.executeEdits("duplicate-line", [
+          {
+            range: new monaco.Range(line, maxCol, line, maxCol),
+            text: "\n" + lineContent,
+            forceMoveMarkers: true,
+          },
+        ]);
+
+        ed.setPosition({
+          lineNumber: line + 1,
+          column: selection.startColumn,
+        });
+      }
+
+      ed.pushUndoStop();
+    },
+  });
+
   editorInstance.onDidChangeModelContent(() => {
     const currentVal = editorInstance?.getValue() ?? "";
     if (codeValue.value !== currentVal) {
