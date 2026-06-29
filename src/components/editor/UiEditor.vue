@@ -134,7 +134,10 @@ onMounted(() => {
     padding: { top: 12, bottom: 12 },
     unicodeHighlight: {
       ambiguousCharacters: false,
+      nonBasicASCII: false,
+      invisibleCharacters: true,
     },
+    renderLineHighlight: "all",
   });
 
   editorInstance.onDidChangeModelContent(() => {
