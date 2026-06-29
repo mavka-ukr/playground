@@ -127,7 +127,7 @@ export default class Playground {
     project.name = name;
 
     const file1 = project.createFile("початок.м");
-    file1.content = `взяти модуль планета [Планета]
+    file1.content = `взяти модуль космос [Планета]
 
 земля = Планета(
   назва="Земля",
@@ -138,7 +138,7 @@ export default class Playground {
 друк(земля.сила_тяжіння(65))
 `;
 
-    const file2 = project.createFile("планета.м");
+    const file2 = project.createFile("космос.м");
     file2.content = `клас Планета
   дія чародія(назва, маса, радіус)
     я.назва = назва
