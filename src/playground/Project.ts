@@ -22,7 +22,7 @@ export default class Project {
       name: project.name || "",
       files: (project.files || []).map((file: string) => new ProjectFile(this, file)),
       lastModified: project.lastModified || Date.now(),
-      mavkaVersion: project.mavkaVersion || playground.mavkaVersions[0]?.mavka || "0.125.7",
+      mavkaVersion: project.mavkaVersion,
       mainFile: undefined,
     });
 

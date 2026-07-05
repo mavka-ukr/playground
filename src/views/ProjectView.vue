@@ -25,6 +25,9 @@ const terminalEl = ref<HTMLDivElement>();
 const project = shallowRef(new Project(P, route.params.id as string));
 const activeFile = shallowRef<ProjectFile>();
 const mavka = ref<any>();
+const mavkaVersion = ref<string>(
+  project.value.mavkaVersion || P.mavkaVersions[0]?.mavka || "1.0.0",
+);
 
 const isWarning = ref(localStorage.getItem("showWarning") !== "false");
 const neverAgainWarning = ref(false);
@@ -42,6 +45,14 @@ watch(
   },
   { immediate: true },
 );
+
+watch(project, () => {
+  mavkaVersion.value = project.value.mavkaVersion || P.mavkaVersions[0]?.mavka || "1.0.0";
+});
+
+watch(mavkaVersion, (newVersion) => {
+  project.value.mavkaVersion = newVersion;
+});
 
 onBeforeMount(() => {
   if (!P.projects.some((p) => p.id === project.value.id)) {
@@ -75,10 +86,10 @@ async function onRunClick() {
     return;
   }
 
-  const version = P.mavkaVersions.find((v) => v.mavka === project.value.mavkaVersion);
+  const version = P.mavkaVersions.find((v) => v.mavka === mavkaVersion.value);
 
   if (!version) {
-    alert(`Не знайдено версію Мавки ${project.value.mavkaVersion}`);
+    alert(`Не знайдено версію Мавки ${mavkaVersion.value}`);
     return;
   }
 
@@ -120,7 +131,7 @@ async function onRunClick() {
 
     const resultCode = await mavka.value.run([file.path]);
 
-    consoleAfter.value = `Процес завершився з кодом ${resultCode}`;
+    consoleAfter.value = `Завершено з кодом ${resultCode}`;
   } catch (error) {
     consoleAfter.value = `Сталася помилка: ${error}`;
   } finally {
@@ -218,7 +229,7 @@ function dismissWarning() {
         </button>
 
         <div class="UiProjectHeaderSelectors">
-          <select v-model="project.mavkaVersion" class="UiProjectHeaderVersion">
+          <select v-model="mavkaVersion" class="UiProjectHeaderVersion">
             <option v-for="version in P.mavkaVersions" :key="version.mavka" :value="version.mavka">
               Мавка {{ version.mavka }}
             </option>
@@ -322,7 +333,7 @@ function dismissWarning() {
         <div class="UiProjectModalContent">
           <div class="UiProjectModalField">
             <label>Версія Мавки</label>
-            <select v-model="project.mavkaVersion">
+            <select v-model="mavkaVersion">
               <option
                 v-for="version in P.mavkaVersions"
                 :key="version.mavka"

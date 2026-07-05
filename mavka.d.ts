@@ -5,6 +5,8 @@ export interface MavkaVersion {
 
 declare global {
   class Mavka {
+    constructor(pkgVersion: string, options?: Record<string, unknown>);
+
     static fetchAvailableVersions(): Promise<MavkaVersion[]>;
   }
 
