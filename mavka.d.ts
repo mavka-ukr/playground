@@ -7,6 +7,7 @@ declare global {
   class Mavka {
     constructor(pkgVersion: string, options?: Record<string, unknown>);
 
+    static getSupportError(): string;
     static fetchAvailableVersions(): Promise<MavkaVersion[]>;
   }
 

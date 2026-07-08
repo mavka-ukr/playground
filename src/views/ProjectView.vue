@@ -104,6 +104,13 @@ async function onRunClick() {
     return;
   }
 
+  const mavkaError = Mavka.getSupportError();
+
+  if (mavkaError) {
+    alert(mavkaError);
+    return;
+  }
+
   isWarning.value = false;
   isRunning.value = true;
   isLoadingRun.value = true;
@@ -293,7 +300,9 @@ function dismissWarning() {
       </div>
 
       <div v-if="activeFile" class="UiProjectEditor">
-        <UiEditor v-model="activeFile.content" />
+        <KeepAlive>
+          <UiEditor :key="activeFile.path" v-model="activeFile.content" />
+        </KeepAlive>
       </div>
     </div>
 
