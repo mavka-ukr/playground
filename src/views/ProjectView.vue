@@ -140,7 +140,11 @@ async function onRunClick() {
 
     consoleAfter.value = `Завершено з кодом ${resultCode}`;
   } catch (error) {
-    consoleAfter.value = `Сталася помилка: ${error}`;
+    if (error && error.resultCode) {
+      consoleAfter.value = `Завершено з кодом ${error.resultCode}`;
+    } else {
+      consoleAfter.value = `Сталася помилка: ${String(error)}`;
+    }
   } finally {
     isRunning.value = false;
     isLoadingRun.value = false;
