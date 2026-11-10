@@ -319,8 +319,8 @@ function dismissWarning() {
 
       <div v-if="isWarning" class="UiProjectConsoleWarning">
         <div class="UiProjectConsoleWarningText">
-          Деякі можливості Бібліотеки Мавки в Майданчику можуть бути обмежені по причині запуску у
-          Web browser (через Wasm64). Використовуйте Майданчик для знайомства з мовою.
+          Мавка в Майданчику запускається через WASM64. Деякі можливості можуть бути обмеженими.
+          Бібліотека Мавки тут недоступна. Використовуйте Майданчик для знайомства з мовою.
         </div>
         <div class="UiProjectConsoleWarningButtons">
           <label for="neverAgainWarning">
